@@ -1,6 +1,8 @@
 package inscricao;
 
 import evento.Evento;
+import inscricao.state.InscricaoAtivaState;
+import inscricao.state.InscricaoState;
 import usuario.Aluno;
 
 import java.time.LocalDateTime;
@@ -10,7 +12,7 @@ public class Inscricao {
     private Aluno aluno;
     private Evento evento;
     private LocalDateTime dataInscricao;
-    private StatusInscricao status;
+    private InscricaoState inscricaoState = new InscricaoAtivaState();
 
     public Long getId() {
         return id;
@@ -44,11 +46,21 @@ public class Inscricao {
         this.dataInscricao = dataInscricao;
     }
 
-    public StatusInscricao getStatus() {
-        return status;
+    public InscricaoState getInscricaoState() {
+        return inscricaoState;
     }
 
-    public void setStatus(StatusInscricao status) {
-        this.status = status;
+    public void setInscricaoState(InscricaoState inscricaoState) {
+        this.inscricaoState = inscricaoState;
+    }
+
+    public void cancelar() {
+        inscricaoState.cancelar(this);
+    }
+
+    public void reativar() {
+        inscricaoState.reativar(this);
+        this.dataInscricao = LocalDateTime.now();
+
     }
 }

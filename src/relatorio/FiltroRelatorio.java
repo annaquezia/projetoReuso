@@ -1,6 +1,6 @@
 package relatorio;
 
-import evento.StatusEvento;
+import evento.state.EventoState;
 
 import java.time.LocalDate;
 
@@ -8,7 +8,7 @@ public class FiltroRelatorio {
     private LocalDate dataInicial;
     private LocalDate dataFinal;
     private Long usuarioId;
-    private StatusEvento statusEvento;
+    private EventoState eventoState;
 
     public LocalDate getDataInicial() {
         return dataInicial;
@@ -34,11 +34,11 @@ public class FiltroRelatorio {
         this.usuarioId = usuarioId;
     }
 
-    public StatusEvento getStatusEvento() {
-        return statusEvento;
+    public EventoState getEventoState() {
+        return eventoState;
     }
 
-    public void setStatusEvento(StatusEvento statusEvento) {
-        this.statusEvento = statusEvento;
+    public void setEventoState(EventoState eventoState) {
+        this.eventoState = eventoState;
     }
 }
