@@ -1,5 +1,7 @@
 package evento;
 
+import evento.state.DisponivelState;
+import evento.state.EventoState;
 import localizacao.Localizacao;
 import usuario.CentroAcademico;
 import usuario.Palestrante;
@@ -19,7 +21,7 @@ public class Evento {
     private Palestrante palestrante;
     private CentroAcademico organizador;
     private Localizacao localizacao;
-    private StatusEvento status;
+    private EventoState eventoState;
 
     public Long getId() {
         return id;
@@ -101,11 +103,29 @@ public class Evento {
         this.localizacao = localizacao;
     }
 
-    public StatusEvento getStatus() {
-        return status;
+    public EventoState getEventoState() {
+        return eventoState;
     }
 
-    public void setStatus(StatusEvento status) {
-        this.status = status;
+    public void setEventoState(EventoState eventoState) {
+        if (this.eventoState == null) {
+            this.eventoState = new DisponivelState();
+        } else {
+            this.eventoState = eventoState;
+        }
     }
+
+    public void lotar() {
+        eventoState.lotar(this);
+    }
+
+    public void cancelar() {
+        eventoState.cancelar(this);
+    }
+
+    public void finalizar() {
+        eventoState.finalizar(this);
+    }
+
+
 }
