@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Login')}"></head>
+<body class="auth-page">
+<main class="auth-screen">
+    <div class="auth-pattern" aria-hidden="true"></div>
+    <div class="auth-orbit" aria-hidden="true"></div>
+    <section class="auth-form-panel" aria-labelledby="login-title">
+        <h1 id="login-title">Seja bem-vindo!</h1>
+        <div th:if="${param.error}" class="alert alert-error">E-mail ou senha inválidos. Confira seus dados e tente novamente.</div>
+        <div th:if="${param.logout}" class="alert alert-success">Você saiu da sua conta.</div>
+        <div th:if="${sucesso}" class="alert alert-success" th:text="${sucesso}"></div>
+        <form th:action="@{/login}" method="post" class="auth-form">
+            <label>E-mail institucional<input type="email" name="username" autocomplete="email" placeholder="voce@universidade.edu.br" required></label>
+            <label>Senha<input type="password" name="password" autocomplete="current-password" placeholder="Digite sua senha" required></label>
+            <span class="forgot-password">Esqueci a senha</span>
+            <button class="button button-auth" type="submit">Entrar</button>
+        </form>
+        <p class="auth-switch">Ainda não tem uma conta? <a th:href="@{/cadastro}">Cadastre-se aqui!</a></p>
+    </section>
+</main>
+</body>
+</html>

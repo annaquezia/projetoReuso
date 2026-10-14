@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${titulo})}"></head>
+<body><header th:replace="~{fragments/layout :: nav}"></header><main class="app-content form-page">
+    <a class="back-link" th:href="@{/centro-academico/eventos}">← Voltar aos eventos</a><div class="form-heading"><span class="eyebrow">PUBLICAÇÃO DE EVENTO</span><h1 th:text="${titulo}">Evento</h1><p>Compartilhe os detalhes para que a comunidade possa se planejar.</p></div>
+    <form data-form-observer="evento" th:attr="data-preview-url=@{/centro-academico/eventos/previa}" th:fragment="campos" class="data-form" th:action="${acao}" th:object="${form}" method="post">
+        <div class="alert alert-error" th:if="${#fields.hasGlobalErrors()}"><p th:each="erro : ${#fields.globalErrors()}" th:text="${erro}"></p></div>
+        <div class="form-section"><h2>Sobre o evento</h2><div class="form-grid"><label class="span-2">Nome do evento<input th:field="*{nome}" maxlength="180" placeholder="Ex.: Semana de inovação" required><small class="field-error" th:errors="*{nome}"></small></label><label class="span-2">Descrição<textarea th:field="*{descricao}" rows="5" placeholder="O que os participantes vão encontrar?" required></textarea><small class="field-error" th:errors="*{descricao}"></small></label><label>Data<input th:field="*{data}" type="date" required><small class="field-error" th:errors="*{data}"></small></label><label>Horário<input th:field="*{horario}" type="time" required><small class="field-error" th:errors="*{horario}"></small></label><label>Local<input th:field="*{local}" maxlength="255" placeholder="Auditório, sala ou endereço" required><small class="field-error" th:errors="*{local}"></small></label><label>Vagas totais<input th:field="*{quantidadeVagas}" type="number" min="1" required><small class="field-error" th:errors="*{quantidadeVagas}"></small></label></div></div>
+        <div class="form-section"><h2>Participação</h2><div class="form-grid"><label class="span-2">Palestrante <span class="optional">(opcional)</span><select th:field="*{palestranteId}"><option value="">Sem palestrante definido</option><option th:each="palestrante : ${palestrantes}" th:value="${palestrante.id}" th:text="${palestrante.nome} + (${palestrante.areaAtuacao != null ? ' · ' + palestrante.areaAtuacao : ''})"></option></select><small>São exibidos palestrantes vinculados ao seu centro acadêmico.</small></label><label class="span-2">Link da imagem <span class="optional">(opcional)</span><input th:field="*{imagemUrl}" type="url" maxlength="500" placeholder="https://..."></label></div></div>
+        <section class="form-preview event-preview" data-form-preview="evento" aria-labelledby="previa-evento-titulo" hidden>
+            <h2 id="previa-evento-titulo">Prévia do evento</h2>
+            <p data-preview-status role="status" hidden></p>
+            <p class="preview-label" data-previa="quando"></p><h3 data-previa="nome"></h3>
+            <p class="preview-description" data-previa="descricao"></p>
+            <div class="preview-facts"><span data-previa="local"></span><span data-previa="vagas"></span></div>
+        </section>
+        <div class="form-actions"><a class="button button-outline" th:href="@{/centro-academico/eventos}">Cancelar</a><button class="button button-primary" type="submit">Salvar evento <span>→</span></button></div>
+    </form>
+</main><footer th:replace="~{fragments/layout :: footer}"></footer></body></html>

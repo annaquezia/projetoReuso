@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${titulo})}"></head>
+<body><header th:replace="~{fragments/layout :: nav}"></header>
+<main class="app-content form-page">
+<a class="back-link" th:href="@{/usuarios}">← Voltar</a>
+<div class="form-heading"><h1 th:text="${titulo}">Novo usuário</h1><p>Preencha os dados para cadastrar.</p></div>
+<form th:replace="~{usuarios/form :: campos}"></form>
+</main><footer th:replace="~{fragments/layout :: footer}"></footer></body></html>

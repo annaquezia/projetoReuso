@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Cadastro de estudante')}"></head>
+<body class="auth-page auth-signup">
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main class="auth-screen auth-screen-register">
+    <section class="auth-form-panel auth-form-panel-register" aria-labelledby="register-title">
+        <h1 id="register-title">Informações pessoais</h1>
+        <form th:action="@{/cadastro}" th:object="${cadastro}" method="post" class="auth-form">
+            <div class="alert alert-error" th:if="${#fields.hasGlobalErrors()}"><p th:each="erro : ${#fields.globalErrors()}" th:text="${erro}"></p></div>
+            <div class="auth-fields-grid">
+                <label>Nome<input th:field="*{nome}" autocomplete="name" placeholder="Seu nome completo" required><small class="field-error" th:errors="*{nome}"></small></label>
+                <label>Data de nascimento<input th:field="*{dataNascimento}" type="date" required><small class="field-error" th:errors="*{dataNascimento}"></small></label>
+                <label>Número da matrícula<input th:field="*{matricula}" placeholder="Sua matrícula" required><small class="field-error" th:errors="*{matricula}"></small></label>
+                <label>Curso<input th:field="*{curso}" placeholder="Ex.: Design" required><small class="field-error" th:errors="*{curso}"></small></label>
+                <label class="auth-field-wide">E-mail institucional<input th:field="*{email}" type="email" autocomplete="email" placeholder="voce@universidade.edu.br" required><small class="field-error" th:errors="*{email}"></small></label>
+                <label class="auth-field-wide">Senha<input th:field="*{senha}" type="password" autocomplete="new-password" placeholder="Pelo menos 8 caracteres" required><small class="field-error" th:errors="*{senha}"></small></label>
+            </div>
+            <button class="button button-auth" type="submit">Cadastrar</button>
+        </form>
+        <p class="auth-switch">Já tem uma conta? <a th:href="@{/login}">Entrar</a></p>
+    </section>
+</main>
+</body>
+</html>

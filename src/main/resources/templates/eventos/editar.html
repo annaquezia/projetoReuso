@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${titulo})}"></head>
+<body><header th:replace="~{fragments/layout :: nav}"></header>
+<main class="app-content form-page">
+<a class="back-link" th:href="@{/centro-academico/eventos}">← Voltar</a>
+<div class="form-heading"><h1 th:text="${titulo}">Editar evento</h1><p>Atualize os dados e salve as alterações.</p></div>
+<form th:replace="~{eventos/form :: campos}"></form>
+</main><footer th:replace="~{fragments/layout :: footer}"></footer></body></html>

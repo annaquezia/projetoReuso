@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Minhas inscrições')}"></head>
+<body><header th:replace="~{fragments/layout :: nav}"></header><main class="app-content page-content">
+<div class="welcome-row"><div><h1>Minhas inscrições</h1><p>Acompanhe os eventos nos quais você se inscreveu.</p></div><a class="button button-primary" th:href="@{/eventos}">Explorar eventos</a></div>
+<div th:if="${sucesso}" class="alert alert-success" th:text="${sucesso}"></div><div th:if="${erro}" class="alert alert-error" th:text="${erro}"></div>
+<div th:if="${#lists.isEmpty(inscricoes)}" class="empty-state"><h2>Você ainda não se inscreveu em um evento</h2><p>Abra os detalhes de um evento e escolha Inscrever-me.</p></div>
+<div th:if="${!#lists.isEmpty(inscricoes)}" class="table-wrap"><table><thead><tr><th>Evento</th><th>Data e horário</th><th>Local</th><th>Sua inscrição</th><th>Ações</th></tr></thead>
+<tbody><tr th:each="inscricao : ${inscricoes}"><td><b th:text="${inscricao.evento.nome}"></b><small class="table-sub" th:text="${!inscricao.evento.ativo ? 'Evento arquivado' : inscricao.evento.nomeEstado}"></small></td>
+<td th:text="${#temporals.format(inscricao.evento.data, 'dd/MM/yyyy')} + ' · ' + ${#temporals.format(inscricao.evento.horario, 'HH:mm')}"></td><td th:text="${inscricao.evento.local}"></td>
+<td><span class="status-pill" th:text="${inscricao.ativa ? 'Confirmada' : 'Cancelada'}"></span></td>
+<td><div class="table-actions"><a th:if="${inscricao.evento.ativo}" class="text-link" th:href="@{/eventos/{id}(id=${inscricao.evento.id})}">Ver evento</a>
+<form th:if="${inscricao.ativa}" th:action="@{/minhas-inscricoes/{id}/cancelar(id=${inscricao.id})}" method="post" onsubmit="return confirm('Cancelar sua inscrição neste evento?')"><button class="link-button danger-link" type="submit">Cancelar inscrição</button></form></div></td></tr></tbody></table></div>
+</main><footer th:replace="~{fragments/layout :: footer}"></footer></body></html>

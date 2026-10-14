@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${titulo})}"></head>
+<body><header th:replace="~{fragments/layout :: nav}"></header><main class="app-content form-page">
+    <a class="back-link" th:href="${propriaConta} ? @{/painel} : @{/usuarios}">← Voltar</a>
+    <div class="form-heading"><span class="eyebrow">CONTA E PERFIL</span><h1 th:text="${titulo}">Usuário</h1><p>Preencha os dados do perfil. A senha é opcional na edição.</p></div>
+    <form data-form-observer="usuario" th:attr="data-preview-url=${propriaConta} ? @{/minha-conta/previa} : @{/usuarios/previa}" th:fragment="campos" class="data-form" th:action="${acao}" th:object="${form}" method="post">
+        <div class="alert alert-error" th:if="${#fields.hasGlobalErrors()}"><p th:each="erro : ${#fields.globalErrors()}" th:text="${erro}"></p></div>
+        <div class="form-section"><h2>Dados básicos</h2><div class="form-grid">
+            <label class="span-2">Nome completo<input th:field="*{nome}" autocomplete="name" required><small class="field-error" th:errors="*{nome}"></small></label>
+            <label class="span-2">E-mail<input th:field="*{email}" type="email" autocomplete="email" required><small class="field-error" th:errors="*{email}"></small></label>
+            <input type="hidden" th:field="*{tipoUsuario}">
+            <div class="span-2" th:if="${!#lists.isEmpty(tipos)}"><label for="tipo-display">Tipo de perfil</label><select id="tipo-display" disabled><option th:each="tipo : ${tipos}" th:value="${tipo}" th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(tipo.name(), '_', ' ')))}" th:selected="${tipo == form.tipoUsuario}"></option></select><small>O tipo do perfil não pode ser alterado depois da criação.</small></div>
+            <div class="span-2" th:if="${propriaConta}"><label for="tipo-readonly">Tipo de perfil</label><input id="tipo-readonly" type="text" th:value="${#strings.capitalize(#strings.toLowerCase(#strings.replace(form.tipoUsuario.name(), '_', ' ')))}" disabled></div>
+        </div></div>
+        <div class="form-section" th:if="${form.tipoUsuario.name() == 'ALUNO'}"><h2>Dados de estudante</h2><div class="form-grid"><label>Matrícula<input th:field="*{matricula}"><small class="field-error" th:errors="*{matricula}"></small></label><label>Curso<input th:field="*{curso}"><small class="field-error" th:errors="*{curso}"></small></label><label>Data de nascimento<input th:field="*{dataNascimento}" type="date"></label></div></div>
+        <div class="form-section" th:if="${form.tipoUsuario.name() == 'CENTRO_ACADEMICO'}"><h2>Dados do centro acadêmico</h2><div class="form-grid"><label class="span-2">Curso<input th:field="*{curso}" required><small class="field-error" th:errors="*{curso}"></small></label><label>Presidente<input th:field="*{presidente}"></label><label>Vice-presidente<input th:field="*{vicePresidente}"></label></div></div>
+        <div class="form-section" th:if="${form.tipoUsuario.name() == 'PALESTRANTE'}"><h2>Dados de palestrante</h2><div class="form-grid"><label class="span-2">Área de atuação<input th:field="*{areaAtuacao}" placeholder="Ex.: Tecnologia e inovação"><small class="field-error" th:errors="*{areaAtuacao}"></small></label></div></div>
+        <div class="form-section" th:if="${form.tipoUsuario.name() == 'UNIVERSIDADE'}"><h2>Dados da universidade</h2><div class="form-grid"><label class="span-2">Endereço<input th:field="*{endereco}"></label></div></div>
+        <div class="form-section"><h2>Segurança</h2><div class="form-grid"><label class="span-2">Senha <span class="optional" th:if="${propriaConta or titulo.startsWith('Editar')}">(opcional para manter a atual)</span><input th:field="*{senha}" type="password" autocomplete="new-password" minlength="8" placeholder="Pelo menos 8 caracteres"><small class="field-error" th:errors="*{senha}"></small></label></div></div>
+        <section class="form-preview user-preview" data-form-preview="usuario" aria-labelledby="previa-usuario-titulo" hidden>
+            <h2 id="previa-usuario-titulo">Confira os dados</h2>
+            <p data-preview-status role="status" hidden></p>
+            <span class="preview-label" data-previa="perfil"></span>
+            <h3 data-previa="nome"></h3><p data-previa="email"></p><p data-previa="detalhe"></p>
+        </section>
+        <div class="form-actions"><a class="button button-outline" th:href="${propriaConta} ? @{/painel} : @{/usuarios}">Cancelar</a><button class="button button-primary" type="submit"><span th:text="${titulo == 'Novo usuário' ? 'Cadastrar usuário' : 'Salvar alterações'}">Salvar alterações</span> <span>→</span></button></div>
+    </form>
+</main><footer th:replace="~{fragments/layout :: footer}"></footer></body></html>

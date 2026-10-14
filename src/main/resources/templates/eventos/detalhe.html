@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Detalhe do evento')}"></head>
+<body><header th:replace="~{fragments/layout :: nav}"></header><main class="app-content detail-page">
+    <a class="back-link" th:href="@{/eventos}">← Voltar para eventos</a>
+    <div th:if="${sucesso}" class="alert alert-success" th:text="${sucesso}"></div>
+    <div th:if="${erro}" class="alert alert-error" th:text="${erro}"></div>
+    <article class="event-detail-card" th:classappend="${evento.status.name() == 'CANCELADO' ? ' detail-cancelled' : ''}">
+        <div class="detail-photo"><img th:if="${evento.imagemUrl != null and !#strings.isEmpty(evento.imagemUrl)}" th:src="${evento.imagemUrl}" alt=""><span class="detail-photo-mark" aria-hidden="true">✳</span></div>
+        <div class="detail-card-copy">
+            <span class="detail-status" th:text="${evento.status}">DISPONÍVEL</span>
+            <h1 th:text="${evento.nome}">Nome do evento</h1>
+            <div class="detail-facts">
+                <div class="fact-row"><span class="fact-icon" aria-hidden="true">◷</span><div><small>DATA E HORÁRIO</small><b th:text="${#temporals.format(evento.data, 'dd/MM/yyyy')} + ' · ' + ${#temporals.format(evento.horario, 'HH:mm')}"></b></div></div>
+                <div class="fact-row"><span class="fact-icon" aria-hidden="true">⌖</span><div><small>LOCAL</small><b th:text="${evento.local}"></b></div></div>
+                <div class="fact-row"><span class="fact-icon" aria-hidden="true">♧</span><div><small>VAGAS DISPONÍVEIS</small><b th:text="${situacao.vagasDisponiveis} + ' de ' + ${evento.quantidadeVagas}"></b></div></div>
+                <div class="fact-row" th:if="${evento.palestrante != null}"><span class="fact-icon" aria-hidden="true">◉</span><div><small>PALESTRANTE</small><b th:text="${evento.palestrante.nome}"></b></div></div>
+            </div>
+            <section class="detail-description"><h2>Sobre o evento</h2><p class="preline" th:text="${evento.descricao}">Descrição do evento.</p></section>
+            <div class="detail-organizer"><small>ORGANIZAÇÃO</small><b th:text="${evento.organizador.nome}"></b></div>
+            <section class="participation-actions" sec:authorize="hasRole('ALUNO')">
+                <p th:if="${situacao.inscrito}">Sua inscrição neste evento está confirmada.</p>
+                <a th:if="${situacao.inscrito}" class="button button-register" th:href="@{/minhas-inscricoes}">Ver minhas inscrições</a>
+                <form th:if="${!situacao.inscrito and situacao.podeInscrever}" th:action="@{/eventos/{id}/inscrever(id=${evento.id})}" method="post"><button class="button button-register" type="submit">Inscrever-me</button></form>
+                <p th:if="${!situacao.inscrito and !situacao.podeInscrever}">Inscrições indisponíveis para este evento.</p>
+            </section>
+            <a sec:authorize="isAnonymous()" th:if="${situacao.podeInscrever}" class="button button-register" th:href="@{/login}">Entre como estudante para se inscrever</a>
+            <p class="status-note" th:if="${evento.status.name() == 'CANCELADO'}">Este evento foi cancelado pelo organizador.</p>
+            <p class="status-note" th:if="${evento.status.name() == 'FINALIZADO'}">Este evento já foi realizado.</p>
+        </div>
+    </article>
+</main><footer th:replace="~{fragments/layout :: footer}"></footer></body>
+</html>

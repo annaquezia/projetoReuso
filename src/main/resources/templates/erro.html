@@ -1,0 +1,4 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Acesso indisponível')}"></head>
+<body><header th:replace="~{fragments/layout :: nav}"></header><main class="container error-page"><span class="empty-icon">✳</span><span class="eyebrow">OPS, NÃO FOI DESSA VEZ</span><h1 th:text="${tituloErro != null ? tituloErro : (param.status != null and param.status[0] == '403' ? 'Acesso não autorizado' : 'Página não encontrada')}">Página não encontrada</h1><p th:text="${mensagem != null ? mensagem : 'Confira o endereço ou volte para a página inicial.'}">Confira o endereço ou volte para a página inicial.</p><a class="button button-primary" th:href="@{/}">Ir para o início <span>→</span></a></main><footer th:replace="~{fragments/layout :: footer}"></footer></body></html>

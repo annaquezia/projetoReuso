@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(titulo)">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#8A0538">
+    <title th:text="${titulo} + ' · PoliWeek'">PoliWeek</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <script type="module" th:src="@{/js/previas-formularios.js}"></script>
+</head>
+<body>
+<header th:fragment="nav" class="site-navigation">
+    <nav class="topbar" sec:authorize="isAnonymous()" aria-label="Navegação principal">
+        <a class="brand" th:href="@{/}" aria-label="PoliWeek, página inicial">
+            <img class="brand-crest" th:src="@{/images/brand-crest.svg}" alt="">
+        </a>
+        <div class="main-nav">
+            <a th:href="@{/eventos}">eventos</a>
+            <span aria-hidden="true">•</span>
+            <a href="/#sobre">o que é a semana acadêmica</a>
+            <span aria-hidden="true">•</span>
+            <a href="/#participar">como participar</a>
+        </div>
+        <div class="nav-account">
+            <a class="button button-login" th:href="@{/login}">Login</a>
+            <a class="button button-register" th:href="@{/cadastro}">Cadastre-se!</a>
+        </div>
+    </nav>
+
+    <aside class="app-sidebar" sec:authorize="isAuthenticated()">
+        <a class="sidebar-brand" th:href="@{/painel}" aria-label="PoliWeek, página inicial">
+            <img class="brand-crest" th:src="@{/images/brand-crest.svg}" alt="">
+        </a>
+        <p class="sidebar-greeting">Olá, <span sec:authentication="principal.nome">estudante</span></p>
+        <nav class="sidebar-nav" aria-label="Menu da conta">
+            <a th:href="@{/painel}" th:classappend="${requestPath == '/painel'} ? ' is-active' : ''"><span aria-hidden="true">⌂</span>Página Inicial</a>
+            <a th:href="@{/minha-conta}" th:classappend="${requestPath != null and requestPath.startsWith('/minha-conta')} ? ' is-active' : ''"><span aria-hidden="true">♙</span>Minha Conta</a>
+            <a sec:authorize="hasRole('UNIVERSIDADE') or hasRole('CENTRO_ACADEMICO')" th:href="@{/usuarios}" th:classappend="${requestPath != null and requestPath.startsWith('/usuarios')} ? ' is-active' : ''"><span aria-hidden="true">♧</span>Usuários</a>
+            <a th:href="@{/eventos}" th:classappend="${requestPath != null and requestPath.startsWith('/eventos')} ? ' is-active' : ''"><span aria-hidden="true">⊙</span>Eventos</a>
+            <a sec:authorize="hasRole('ALUNO')" th:href="@{/minhas-inscricoes}" th:classappend="${requestPath != null and requestPath.startsWith('/minhas-inscricoes')} ? ' is-active' : ''"><span aria-hidden="true">✓</span>Minhas inscrições</a>
+            <a sec:authorize="hasRole('CENTRO_ACADEMICO')" th:href="@{/centro-academico/eventos}" th:classappend="${requestPath != null and requestPath.startsWith('/centro-academico/eventos')} ? ' is-active' : ''"><span aria-hidden="true">▤</span>Gerenciar eventos</a>
+        </nav>
+        <form class="sidebar-logout" th:action="@{/logout}" method="post"><button type="submit"><span>Sair</span><span aria-hidden="true">⇥</span></button></form>
+    </aside>
+</header>
+
+<div th:fragment="alerts" class="alerts">
+    <div th:if="${sucesso}" class="alert alert-success" th:text="${sucesso}"></div>
+    <div th:if="${erro}" class="alert alert-error" th:text="${erro}"></div>
+    <div th:if="${#fields != null and #fields.hasGlobalErrors()}" class="alert alert-error">
+        <p th:each="erro : ${#fields.globalErrors()}" th:text="${erro}">Erro</p>
+    </div>
+</div>
+
+<footer th:fragment="footer" class="site-footer" sec:authorize="isAnonymous()">
+    <a class="brand brand-footer" th:href="@{/}"><img class="brand-crest" th:src="@{/images/brand-crest.svg}" alt=""><span>PoliWeek</span></a>
+    <span>Semana acadêmica · PUCPR</span>
+</footer>
+</body>
+</html>

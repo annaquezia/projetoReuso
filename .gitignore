@@ -32,6 +32,7 @@ cmake-build-*/
 out/
 
 ### Java
+target/
 # Compiled class file
 *.class
 
