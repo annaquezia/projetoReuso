@@ -16,6 +16,18 @@ A autoria histórica não foi atribuída; [DEFESA.md](extras/Documentacao/DEFESA
 Java 17, Spring Boot 3.5.16, Spring MVC, Thymeleaf, Spring Security,
 Bean Validation, JPA/Hibernate, MySQL e Flyway. Maven Wrapper incluído.
 
+## Rodar a aplicação no macOS/Linux
+
+Com Java 17 e MySQL instalados e o servidor MySQL em execução, rode na raiz:
+
+```sh
+./scripts/rodar-java.sh
+```
+
+O comando instala primeiro a biblioteca `observer-lib` no repositório Maven local e
+inicia a aplicação Spring Boot. No IntelliJ, abra o `pom.xml` como projeto Maven e
+recarregue os projetos Maven para reconhecer JUnit e a biblioteca Observer.
+
 | Diretório em `src/main` | Responsabilidade |
 |---|---|
 | `resources/templates`, `resources/static` | HTML renderizado pelo servidor, CSS e ponte JavaScript das prévias |
@@ -109,7 +121,7 @@ edite e consulte novamente; exclua somente o registro de teste e confirme sua au
 ## Seis exemplos de padrões e LPS
 
 - **Singleton GoF:** os estados de evento e inscrição são instâncias imutáveis com construtor privado e `getInstance()`. Dois exemplos usados na defesa: `DisponivelState` e `InscricaoAtivaState`. O contexto recebe o comportamento compartilhado sem compartilhar seus dados. Os serviços continuam gerenciados pelo Spring.
-- **Observer:** prévia de usuário e prévia de evento, com `FormularioSubject`, `PreviaUsuarioObserver` e `PreviaEventoObserver`. `PreviasController` registra e notifica objetos Java; o JavaScript transporta dados e apresenta texto, sem persistir rascunhos.
+- **Observer:** prévia de usuário e prévia de evento, com `br.edu.projetoreuso.patterns.observer.FormularioSubject`, `PreviaUsuarioObserver` e `PreviaEventoObserver`. `PreviasController` registra e notifica objetos Java; o JavaScript transporta dados e apresenta texto, sem persistir rascunhos.
 - **State:** `Evento` delega a `evento/state`; `InscricaoEvento` delega a `inscricao/state`, inclusive após carregar do banco. Cancelamento e reinscrição usam os estados no fluxo real.
 - **Variabilidade LPS:** `APP_INSCRICOES_HABILITADAS=true` oferece catálogo com inscrições; `false` oferece somente divulgação. `VarianteProduto` controla os serviços e a interface. Usuários, eventos e persistência são o núcleo comum. A seleção ocorre ao iniciar, preservando os registros existentes.
 - **Compactação:** Extract Method em `UsuarioService.aplicarAtualizacao`, compartilhado pela edição gerenciada e pela própria conta. [Antes e depois verificáveis](extras/Compactacao/README.md).
