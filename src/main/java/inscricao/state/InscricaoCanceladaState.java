@@ -1,20 +1,30 @@
 package inscricao.state;
 
-import inscricao.Inscricao;
+import br.edu.projetoreuso.inscricao.InscricaoEvento;
 
-public class InscricaoCanceladaState implements InscricaoState{
+public final class InscricaoCanceladaState implements InscricaoState {
+    private static final InscricaoCanceladaState INSTANCE = new InscricaoCanceladaState();
+    private final String nome;
+
+    private InscricaoCanceladaState() { this.nome = "Cancelada"; }
+
+    public static InscricaoCanceladaState getInstance() { return INSTANCE; }
+
     @Override
-    public void cancelar(Inscricao inscricao) {
+    public void cancelar(InscricaoEvento inscricao) {
         throw new IllegalStateException("A inscrição já está cancelada");
     }
 
     @Override
-    public void reativar(Inscricao inscricao) {
-        inscricao.setInscricaoState(new InscricaoAtivaState());
+    public void reativar(InscricaoEvento inscricao) {
+        inscricao.mudarEstado(InscricaoAtivaState.getInstance());
     }
 
     @Override
     public String getNome() {
-        return "Cancelada";
+        return nome;
     }
+
+    @Override
+    public boolean isAtiva() { return false; }
 }

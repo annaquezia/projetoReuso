@@ -3,7 +3,7 @@
 <head th:replace="~{fragments/layout :: head(${titulo})}"></head>
 <body><header th:replace="~{fragments/layout :: nav}"></header>
 <main class="app-content form-page">
-<a class="back-link" th:href="@{/usuarios}">← Voltar</a>
-<div class="form-heading"><h1 th:text="${titulo}">Editar usuário</h1><p>Atualize os dados e salve as alterações.</p></div>
+<a class="back-link" th:href="@{/usuarios}"><svg th:replace="~{fragments/layout :: icon('arrow-left')}"></svg> Voltar</a>
+<div class="form-heading"><span class="eyebrow">CONTA E PERFIL</span><h1 th:text="${titulo}">Editar usuário</h1><p>Atualize os dados e salve as alterações.</p></div>
 <form th:replace="~{usuarios/form :: campos}"></form>
 </main><footer th:replace="~{fragments/layout :: footer}"></footer></body></html>

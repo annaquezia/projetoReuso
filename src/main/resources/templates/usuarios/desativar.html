@@ -3,10 +3,9 @@
 <head th:replace="~{fragments/layout :: head('Desativar usuário')}"></head>
 <body><header th:replace="~{fragments/layout :: nav}"></header>
 <main class="app-content form-page">
-<a class="back-link" th:href="@{/usuarios}">← Voltar</a>
-<div class="form-heading"><h1>Desativar usuário</h1><p>Confira os dados antes de confirmar.</p></div>
-<div th:if="${erro}" class="alert alert-error" th:text="${erro}"></div>
-<section class="data-form"><div class="form-section"><h2 th:text="${usuario.nome}">Registro</h2><p>O usuário ficará inativo e não poderá iniciar uma nova sessão. Seu histórico será preservado.</p>
+<a class="back-link" th:href="@{/usuarios}"><svg th:replace="~{fragments/layout :: icon('arrow-left')}"></svg> Voltar</a>
+<div class="form-heading"><span class="eyebrow">PRESERVAÇÃO DO HISTÓRICO</span><h1>Desativar usuário</h1><p>Confira os dados antes de confirmar.</p></div>
+<section class="confirmation-card"><div class="form-section"><h2 th:text="${usuario.nome}">Registro</h2><p>O usuário ficará inativo e não poderá iniciar uma nova sessão. Seu histórico será preservado.</p>
 <p th:if="${usuario.ativo == false}">Este registro já está inativo.</p></div>
 <form th:if="${usuario.ativo}" th:action="@{/usuarios/{id}/desativar(id=${usuario.id})}" method="post">
 <div class="form-actions"><a class="button button-outline" th:href="@{/usuarios}">Voltar sem alterar</a><button class="button button-primary" type="submit">Confirmar desativação</button></div>

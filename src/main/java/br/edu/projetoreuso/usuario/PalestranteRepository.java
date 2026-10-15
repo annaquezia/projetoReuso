@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface PalestranteRepository extends JpaRepository<Palestrante, Long> {
     List<Palestrante> findAllByCentroAcademico_IdOrderByNome(Long centroAcademicoId);
+    boolean existsByCentroAcademico_Id(Long centroAcademicoId);
 }

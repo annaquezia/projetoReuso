@@ -1,0 +1,1 @@
+Esta é a compactação por reuso do Conecta Campus. No código original, duas telas atualizavam usuários: a edição gerenciada e a própria conta. Os métodos repetiam validação de e-mail, tipo e senha, preenchimento de atributos e codificação da senha. A cópia original foi preservada e conferida contra o histórico Git. O problema é manter a mesma regra em dois lugares.

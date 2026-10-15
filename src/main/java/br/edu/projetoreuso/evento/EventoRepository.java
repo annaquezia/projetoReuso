@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EventoRepository extends JpaRepository<Evento, Long> {
+    boolean existsByOrganizador_Id(Long organizadorId);
+    boolean existsByPalestrante_Id(Long palestranteId);
     @EntityGraph(attributePaths = {"organizador", "palestrante"})
     List<Evento> findAllByAtivoTrueOrderByDataAscHorarioAsc();
     @EntityGraph(attributePaths = {"organizador", "palestrante"})

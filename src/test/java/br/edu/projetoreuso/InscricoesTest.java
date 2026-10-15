@@ -6,6 +6,8 @@ import br.edu.projetoreuso.usuario.*;
 import br.edu.projetoreuso.web.form.*;
 import evento.Evento;
 import evento.EventoStatus;
+import inscricao.state.InscricaoAtivaState;
+import inscricao.state.InscricaoCanceladaState;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -77,8 +79,12 @@ class InscricoesTest {
         mvc.perform(post("/minhas-inscricoes/" + inscricao.getId() + "/cancelar").with(user(aluno)).with(csrf()))
                 .andExpect(redirectedUrl("/minhas-inscricoes"));
         assertThat(registros.findById(inscricao.getId()).orElseThrow().isAtiva()).isFalse();
+        assertThat(registros.findById(inscricao.getId()).orElseThrow().getEstado())
+                .isInstanceOf(InscricaoCanceladaState.class);
         assertThat(eventos.findById(evento.getId()).orElseThrow().getStatus()).isEqualTo(EventoStatus.DISPONIVEL);
         assertThat(inscricoes.inscrever(aluno.getEmail(), evento.getId()).getId()).isEqualTo(inscricao.getId());
+        assertThat(registros.findById(inscricao.getId()).orElseThrow().getEstado())
+                .isInstanceOf(InscricaoAtivaState.class);
     }
     @Test void protegeInscricoesPorPerfilProprietarioECsrf() throws Exception {
         var inscricao = inscricoes.inscrever(aluno.getEmail(), evento.getId());
@@ -133,5 +139,18 @@ class InscricoesTest {
         passado.setData(LocalDate.now().minusDays(1)); eventos.save(passado);
         assertThatThrownBy(() -> inscricoes.inscrever(aluno.getEmail(), passado.getId())).isInstanceOf(IllegalStateException.class);
         assertThat(registros.countByEvento_IdAndAtivaTrue(evento.getId())).isZero();
+    }
+
+    @Test void minhaContaRecusaMatriculaDuplicadaOuVaziaSemAlterarORegistro() {
+        Aluno outro = novoAluno();
+        UsuarioForm form = UsuarioForm.from(aluno);
+        form.setMatricula(" " + outro.getMatricula() + " ");
+        assertThatThrownBy(() -> usuarioService.atualizarMinhaConta(aluno.getEmail(), form))
+                .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("matrícula");
+        form.setMatricula("   ");
+        assertThatThrownBy(() -> usuarioService.atualizarMinhaConta(aluno.getEmail(), form))
+                .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("matrícula");
+        assertThat(usuarios.findById(aluno.getId()).map(Aluno.class::cast).orElseThrow().getMatricula())
+                .isEqualTo(aluno.getMatricula());
     }
 }

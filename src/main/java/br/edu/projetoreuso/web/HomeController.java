@@ -6,9 +6,11 @@ import br.edu.projetoreuso.web.form.CadastroAlunoForm;
 import br.edu.projetoreuso.web.form.UsuarioForm;
 import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,9 +19,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import usuario.Aluno;
 import usuario.CentroAcademico;
-import usuario.Palestrante;
 import usuario.Universidade;
 import usuario.Usuario;
 
@@ -88,7 +88,8 @@ public class HomeController {
     @PostMapping("/minha-conta")
     public String atualizarMinhaConta(Authentication authentication,
                                       @Valid @ModelAttribute("form") UsuarioForm form,
-                                      BindingResult binding, Model model, RedirectAttributes flash) {
+                                      BindingResult binding, Model model, RedirectAttributes flash,
+                                      HttpServletRequest request, HttpServletResponse response) {
         if (binding.hasErrors()) {
             model.addAttribute("titulo", "Minha conta");
             model.addAttribute("acao", "/minha-conta");
@@ -100,7 +101,10 @@ public class HomeController {
             Usuario atualizado = usuarios.buscarAtual(form.getEmail());
             var novaAutenticacao = new UsernamePasswordAuthenticationToken(atualizado, null, atualizado.getAuthorities());
             novaAutenticacao.setDetails(authentication.getDetails());
-            SecurityContextHolder.getContext().setAuthentication(novaAutenticacao);
+            var contexto = SecurityContextHolder.createEmptyContext();
+            contexto.setAuthentication(novaAutenticacao);
+            SecurityContextHolder.setContext(contexto);
+            new HttpSessionSecurityContextRepository().saveContext(contexto, request, response);
             flash.addFlashAttribute("sucesso", "Seus dados foram atualizados.");
             return "redirect:/minha-conta";
         } catch (IllegalArgumentException ex) {

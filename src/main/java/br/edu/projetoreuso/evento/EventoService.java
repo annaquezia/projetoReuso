@@ -18,6 +18,7 @@ import usuario.Usuario;
 
 import java.time.LocalDate;
 import java.util.List;
+import br.edu.projetoreuso.organizacao.ComunicadoRepository;
 
 @Service
 public class EventoService {
@@ -26,14 +27,17 @@ public class EventoService {
     private final UsuarioRepository usuarios;
     private final CentroAcademicoRepository centros;
     private final PalestranteRepository palestrantes;
+    private final ComunicadoRepository comunicados;
 
     public EventoService(EventoRepository eventos, UsuarioRepository usuarios,
-                         CentroAcademicoRepository centros, PalestranteRepository palestrantes, InscricaoRepository inscricoes) {
+                         CentroAcademicoRepository centros, PalestranteRepository palestrantes,
+                         InscricaoRepository inscricoes, ComunicadoRepository comunicados) {
         this.eventos = eventos;
         this.inscricoes = inscricoes;
         this.usuarios = usuarios;
         this.centros = centros;
         this.palestrantes = palestrantes;
+        this.comunicados = comunicados;
     }
 
     @Transactional(readOnly = true)
@@ -91,7 +95,7 @@ public class EventoService {
         long ocupadas = inscricoes.countByEvento_IdAndAtivaTrue(id);
         if (ocupadas == evento.getQuantidadeVagas() && evento.getStatus() == EventoStatus.DISPONIVEL) evento.lotar();
         else if (ocupadas < evento.getQuantidadeVagas() && evento.getStatus() == EventoStatus.LOTADO)
-            evento.setEventoState(new evento.state.DisponivelState());
+            evento.reabrir();
         return eventos.save(evento);
     }
 
@@ -111,7 +115,6 @@ public class EventoService {
     }
 
     private void alterarEstado(String emailAtor, Long id, String acao) {
-        CentroAcademico centro = centroPorEmail(emailAtor);
         Evento evento = buscarBloqueado(emailAtor, id);
         switch (acao) {
             case "LOTADO" -> evento.lotar();
@@ -176,5 +179,16 @@ public class EventoService {
                 .orElseThrow(() -> new IllegalArgumentException("Evento não encontrado."));
         garantirProprietario(evento, centro);
         return evento;
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void excluir(String emailAtor, Long id) {
+        Evento evento = buscarBloqueado(emailAtor, id);
+        if (inscricoes.existsByEvento_Id(id))
+            throw new IllegalStateException("Este evento possui inscrições. Use Arquivar para preservar o histórico.");
+        if (comunicados.existsByEvento_Id(id))
+            throw new IllegalStateException("Este evento possui comunicados. Use Arquivar para preservar o histórico.");
+        eventos.delete(evento);
+        eventos.flush();
     }
 }

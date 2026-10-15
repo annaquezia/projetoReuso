@@ -11,4 +11,15 @@ public class RequestPathAdvice {
     public String requestPath(HttpServletRequest request) {
         return request.getRequestURI();
     }
+
+    @ModelAttribute("secaoAtual")
+    public String secaoAtual(HttpServletRequest request) {
+        String caminho = request.getRequestURI();
+        if (caminho.startsWith("/usuarios")) return "usuarios";
+        if (caminho.contains("/comunicados")) return "comunicados";
+        if (caminho.contains("/eventos")) return "eventos";
+        if (caminho.startsWith("/minhas-inscricoes")) return "inscricoes";
+        if (caminho.startsWith("/minha-conta")) return "conta";
+        return "inicio";
+    }
 }

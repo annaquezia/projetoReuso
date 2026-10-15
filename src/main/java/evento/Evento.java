@@ -21,7 +21,6 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import localizacao.Localizacao;
 import usuario.CentroAcademico;
 import usuario.Palestrante;
 
@@ -71,8 +70,6 @@ public class Evento {
     @JoinColumn(name = "centro_academico_id", nullable = false)
     private CentroAcademico organizador;
 
-    @Transient
-    private Localizacao localizacao;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -105,8 +102,6 @@ public class Evento {
     public void setPalestrante(Palestrante palestrante) { this.palestrante = palestrante; }
     public CentroAcademico getOrganizador() { return organizador; }
     public void setOrganizador(CentroAcademico organizador) { this.organizador = organizador; }
-    public Localizacao getLocalizacao() { return localizacao; }
-    public void setLocalizacao(Localizacao localizacao) { this.localizacao = localizacao; }
     public EventoStatus getStatus() { return status; }
     public boolean isAtivo() { return ativo; }
     public void setAtivo(boolean ativo) { this.ativo = ativo; }
@@ -118,10 +113,10 @@ public class Evento {
     @PostLoad
     private void restaurarEstado() {
         this.eventoState = switch (status) {
-            case DISPONIVEL -> new DisponivelState();
-            case LOTADO -> new LotadoState();
-            case CANCELADO -> new CanceladoState();
-            case FINALIZADO -> new FinalizadoState();
+            case DISPONIVEL -> DisponivelState.getInstance();
+            case LOTADO -> LotadoState.getInstance();
+            case CANCELADO -> CanceladoState.getInstance();
+            case FINALIZADO -> FinalizadoState.getInstance();
         };
     }
 
@@ -131,7 +126,7 @@ public class Evento {
     }
 
     public void setEventoState(EventoState eventoState) {
-        EventoState novoEstado = eventoState == null ? new DisponivelState() : eventoState;
+        EventoState novoEstado = eventoState == null ? DisponivelState.getInstance() : eventoState;
         this.eventoState = novoEstado;
         if (novoEstado instanceof DisponivelState) this.status = EventoStatus.DISPONIVEL;
         else if (novoEstado instanceof LotadoState) this.status = EventoStatus.LOTADO;
@@ -149,5 +144,9 @@ public class Evento {
 
     public void finalizar() {
         getEventoState().finalizar(this);
+    }
+
+    public void reabrir() {
+        getEventoState().reabrir(this);
     }
 }

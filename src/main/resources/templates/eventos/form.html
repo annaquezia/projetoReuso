@@ -2,7 +2,7 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head(${titulo})}"></head>
 <body><header th:replace="~{fragments/layout :: nav}"></header><main class="app-content form-page">
-    <a class="back-link" th:href="@{/centro-academico/eventos}">← Voltar aos eventos</a><div class="form-heading"><span class="eyebrow">PUBLICAÇÃO DE EVENTO</span><h1 th:text="${titulo}">Evento</h1><p>Compartilhe os detalhes para que a comunidade possa se planejar.</p></div>
+    <a class="back-link" th:href="@{/centro-academico/eventos}"><svg th:replace="~{fragments/layout :: icon('arrow-left')}"></svg> Voltar aos eventos</a><div class="form-heading"><span class="eyebrow">PUBLICAÇÃO DE EVENTO</span><h1 th:text="${titulo}">Evento</h1><p>Compartilhe os detalhes para que a comunidade possa se planejar.</p></div>
     <form data-form-observer="evento" th:attr="data-preview-url=@{/centro-academico/eventos/previa}" th:fragment="campos" class="data-form" th:action="${acao}" th:object="${form}" method="post">
         <div class="alert alert-error" th:if="${#fields.hasGlobalErrors()}"><p th:each="erro : ${#fields.globalErrors()}" th:text="${erro}"></p></div>
         <div class="form-section"><h2>Sobre o evento</h2><div class="form-grid"><label class="span-2">Nome do evento<input th:field="*{nome}" maxlength="180" placeholder="Ex.: Semana de inovação" required><small class="field-error" th:errors="*{nome}"></small></label><label class="span-2">Descrição<textarea th:field="*{descricao}" rows="5" placeholder="O que os participantes vão encontrar?" required></textarea><small class="field-error" th:errors="*{descricao}"></small></label><label>Data<input th:field="*{data}" type="date" required><small class="field-error" th:errors="*{data}"></small></label><label>Horário<input th:field="*{horario}" type="time" required><small class="field-error" th:errors="*{horario}"></small></label><label>Local<input th:field="*{local}" maxlength="255" placeholder="Auditório, sala ou endereço" required><small class="field-error" th:errors="*{local}"></small></label><label>Vagas totais<input th:field="*{quantidadeVagas}" type="number" min="1" required><small class="field-error" th:errors="*{quantidadeVagas}"></small></label></div></div>
@@ -14,6 +14,6 @@
             <p class="preview-description" data-previa="descricao"></p>
             <div class="preview-facts"><span data-previa="local"></span><span data-previa="vagas"></span></div>
         </section>
-        <div class="form-actions"><a class="button button-outline" th:href="@{/centro-academico/eventos}">Cancelar</a><button class="button button-primary" type="submit">Salvar evento <span>→</span></button></div>
+        <div class="form-actions"><a class="button button-outline" th:href="@{/centro-academico/eventos}">Cancelar</a><button class="button button-primary" type="submit">Salvar evento <span><svg th:replace="~{fragments/layout :: icon('arrow-right')}"></svg></span></button></div>
     </form>
 </main><footer th:replace="~{fragments/layout :: footer}"></footer></body></html>

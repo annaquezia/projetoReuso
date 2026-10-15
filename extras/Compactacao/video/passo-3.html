@@ -1,0 +1,10 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Compactação por reuso</title><style>
+*{box-sizing:border-box}body{margin:0;background:#161620;color:#f7f4ff;font-family:Arial,sans-serif;padding:42px 58px;width:1600px;height:900px}header{font-size:15px;letter-spacing:2px;color:#db8cad}h1{font-size:38px;margin:16px 0 28px}.codigo{display:flex;gap:25px;height:650px}pre{flex:1;min-width:0;margin:0;border:1px solid #65566b;border-radius:14px;background:#232330;padding:22px;font:18px/1.35 Menlo,monospace;white-space:pre-wrap;overflow-wrap:anywhere}footer{font-size:19px;color:#dbc6d9;margin-top:22px}</style><body><header>CONECTA CAMPUS · REUSO DE SOFTWARE</header><h1>3. Reutilizar nas duas operações</h1><div class="codigo"><pre>public Usuario atualizarGerenciado(String emailAtor, Long id, UsuarioForm form) {
+        Usuario alvo = buscarGerenciado(emailAtor, id);
+        aplicarAtualizacao(alvo, form);
+        return usuarios.save(alvo);
+    }</pre><pre>public void atualizarMinhaConta(String emailAtor, UsuarioForm form) {
+        Usuario alvo = usuarioPorEmail(emailAtor);
+        aplicarAtualizacao(alvo, form);
+        usuarios.save(alvo);
+    }</pre></div><footer>Permissão e contexto continuam nas entradas · transações preservadas</footer></body></html>

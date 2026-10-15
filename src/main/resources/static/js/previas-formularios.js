@@ -14,7 +14,6 @@ export function conectarPrevia(form, solicitar = globalThis.fetch) {
     if (!root || !campos[form.dataset.formObserver] || !form.dataset.previewUrl) return null;
     const status = root.querySelector("[data-preview-status]");
     let versao = 0, timer, pendente, encerrado = false;
-
     const atualizar = async () => {
         const atual = ++versao;
         pendente?.abort();

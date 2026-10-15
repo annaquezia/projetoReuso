@@ -3,22 +3,21 @@
 <head th:replace="~{fragments/layout :: head('Página inicial')}"></head>
 <body class="authenticated-page"><header th:replace="~{fragments/layout :: nav}"></header>
 <main class="app-content dashboard-page">
-    <div th:if="${sucesso}" class="alert alert-success" th:text="${sucesso}"></div>
     <section class="dashboard-welcome">
         <span class="eyebrow">POLIWEEK · SEMANA ACADÊMICA</span>
         <h1>Seja bem-vindo, <span th:text="${usuario.nome}">estudante</span>!</h1>
     </section>
-    <div class="dashboard-notice"><span aria-hidden="true">✦</span><p>Acompanhe a programação e encontre os próximos eventos da comunidade acadêmica.</p></div>
+    <div class="dashboard-notice"><span aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('info-circle')}"></svg></span><p>Acompanhe a programação e encontre os próximos eventos da comunidade acadêmica.</p></div>
 
     <section class="dashboard-shortcuts" th:if="${usuariosGerenciados != null}">
-        <a class="button button-primary" th:href="@{/usuarios}">Gerenciar usuários <span>→</span></a>
+        <a class="button button-primary" th:href="@{/usuarios}">Gerenciar usuários <span><svg th:replace="~{fragments/layout :: icon('arrow-right')}"></svg></span></a>
     </section>
     <section class="dash-section dashboard-events">
-        <div class="section-heading"><div><span class="eyebrow">AGENDA ACADÊMICA</span><h2>Eventos disponíveis</h2></div><a class="text-link" th:href="@{/eventos}">Ver todos <span>→</span></a></div>
+        <div class="section-heading"><div><span class="eyebrow">AGENDA ACADÊMICA</span><h2>Eventos disponíveis</h2></div><a class="text-link" th:href="@{/eventos}">Ver todos <span><svg th:replace="~{fragments/layout :: icon('arrow-right')}"></svg></span></a></div>
         <div class="featured-strip" th:if="${!#lists.isEmpty(eventosRecentes)}">
             <article class="featured-card" th:each="evento : ${eventosRecentes}">
-                <div class="featured-cover"><img th:if="${evento.imagemUrl != null and !#strings.isEmpty(evento.imagemUrl)}" th:src="${evento.imagemUrl}" alt=""><span class="featured-date" th:text="${#temporals.format(evento.data, 'dd/MM/yyyy')}">18/09/2026</span><span class="featured-mark" aria-hidden="true">✳</span></div>
-                <div class="featured-copy"><span class="featured-meta" th:text="${#temporals.format(evento.horario, 'HH:mm')} + ' · ' + ${evento.local}">14:00 · Auditório</span><h3 th:text="${evento.nome}">Evento acadêmico</h3><p th:text="${evento.descricao}">Descrição do evento.</p><a th:href="@{/eventos/{id}(id=${evento.id})}">Ver mais <span aria-hidden="true">→</span></a></div>
+                <div class="featured-cover"><img th:if="${evento.imagemUrl != null and !#strings.isEmpty(evento.imagemUrl)}" th:src="${evento.imagemUrl}" alt=""><span class="featured-date" th:text="${#temporals.format(evento.data, 'dd/MM/yyyy')}">18/09/2026</span><span class="featured-mark" aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('calendar-event')}"></svg></span></div>
+                <div class="featured-copy"><span class="featured-meta" th:text="${#temporals.format(evento.horario, 'HH:mm')} + ' · ' + ${evento.local}">14:00 · Auditório</span><h3 th:text="${evento.nome}">Evento acadêmico</h3><p th:text="${evento.descricao}">Descrição do evento.</p><a th:href="@{/eventos/{id}(id=${evento.id})}">Ver mais <span aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('arrow-right')}"></svg></span></a></div>
             </article>
         </div>
         <div th:if="${#lists.isEmpty(eventosRecentes)}" class="empty-state"><h2>Nenhum evento publicado ainda</h2><p>Volte em breve para conferir as novidades da semana acadêmica.</p></div>

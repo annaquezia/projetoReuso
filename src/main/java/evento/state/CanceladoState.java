@@ -2,7 +2,14 @@ package evento.state;
 
 import evento.Evento;
 
-public class CanceladoState implements EventoState {
+public final class CanceladoState implements EventoState {
+    private static final CanceladoState INSTANCE = new CanceladoState();
+    private final String nome;
+
+    private CanceladoState() { this.nome = "Cancelado"; }
+
+    public static CanceladoState getInstance() { return INSTANCE; }
+
     @Override
     public void lotar(Evento evento) {
         throw new IllegalStateException("Um evento cancelado não pode ser lotado");
@@ -20,6 +27,6 @@ public class CanceladoState implements EventoState {
 
     @Override
     public String getNome() {
-        return "Cancelado";
+        return nome;
     }
 }

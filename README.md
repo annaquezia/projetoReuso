@@ -1,97 +1,142 @@
-# Conecta Campus — MVP
+# Conecta Campus — eventos acadêmicos
 
-Aplicação web Java para administrar **usuários** e **eventos acadêmicos**. O módulo de solicitação de equipamentos não faz parte deste MVP.
+Aplicação web para universidade, centros acadêmicos, palestrantes e estudantes.
+A universidade gerencia centros; cada centro gerencia palestrantes e eventos;
+estudantes consultam a programação e fazem/cancelam inscrições.
+A interface mantém a identidade visual PoliWeek.
 
-## Requisitos
+## Equipe
 
-- Java 17 ou superior.
-- MySQL 8 para uso normal. Para demonstração local rápida, há um perfil H2 em memória.
-- O Maven Wrapper baixa a versão de Maven fixada pelo projeto na primeira execução.
+**Laura, Otavio e Anna**: três integrantes, com **seis telas distintas de operações
+CRUD**, conforme esclarecido pela equipe. Não são necessários seis cadastros completos.
+A autoria histórica não foi atribuída; [DEFESA.md](extras/Documentacao/DEFESA.md) contém uma divisão sugerida de estudo.
+
+## Tecnologias e organização
+
+Java 17, Spring Boot 3.5.16, Spring MVC, Thymeleaf, Spring Security,
+Bean Validation, JPA/Hibernate, MySQL e Flyway. Maven Wrapper incluído.
+
+| Diretório em `src/main` | Responsabilidade |
+|---|---|
+| `resources/templates`, `resources/static` | HTML renderizado pelo servidor, CSS e ponte JavaScript das prévias |
+| `java/br/edu/projetoreuso/web` | Rotas HTTP, formulários e respostas |
+| `java/br/edu/projetoreuso/{usuario,evento,inscricao}` | Serviços transacionais e repositórios JPA; entidade `InscricaoEvento` |
+| `java/usuario`, `java/evento` | Entidades de domínio e herança dos usuários |
+| `java/evento/state`, `java/inscricao/state` | Estados de eventos e inscrições |
+| `java/br/edu/projetoreuso/patterns/observer` | Publicador e observadores das duas prévias |
+| `java/br/edu/projetoreuso/organizacao` | Comunicados: entidade, regras e repositório; verificação do centro proprietário |
+| `java/br/edu/projetoreuso/config` | Segurança, inicialização opcional e variante do produto |
+| `resources/db/migration` | Migrações MySQL V1–V5; não alterar versões já aplicadas |
 
 ## Executar com MySQL
 
-1. Crie um banco MySQL (ou permita que o usuário configurado o crie) e ajuste as variáveis de ambiente:
+1. Tenha **Java 17** e um servidor MySQL compatível em execução.
+2. Gere o JAR com `./mvnw package` (Windows: `./mvnw.cmd package`).
+3. Execute `bash scripts/iniciar.sh --seed` no macOS/Linux ou
+   `./scripts/iniciar.ps1 -Seed` no Windows/PowerShell.
+4. Informe suas próprias credenciais do MySQL e abra
+   [http://127.0.0.1:8080](http://127.0.0.1:8080).
+   As próximas execuções dispensam `--seed` / `-Seed`.
 
-   ```sh
-   export DB_URL='jdbc:mysql://localhost:3306/projetoreuso?createDatabaseIfNotExist=true&serverTimezone=UTC'
-   export DB_USERNAME='root'
-   export DB_PASSWORD='sua-senha'
-   export APP_BOOTSTRAP_EMAIL='admin@universidade.edu.br'
-   export APP_BOOTSTRAP_PASSWORD='uma-senha-com-8-caracteres'
-   ```
+Os iniciadores usam `reuso_avaliacao` como banco separado. Respeitam `DB_URL`,
+`DB_USERNAME` e `DB_PASSWORD` já definidos; não leem `.env` nem gravam a senha.
+Executar diretamente `java -jar target/projeto-reuso-0.3.0.jar` usa as variáveis
+ou os padrões de `application.properties` (banco `projetoreuso`).
+Flyway aplica as migrações pendentes e Hibernate valida as entidades.
 
-2. Empacote e inicie:
+A entrega para o professor é gerada com `python3 scripts/empacotar.py`, em
+`extras/Entrega/Projeto Reuso.zip`. Inclui o JAR pronto, código e documentação;
+não inclui `.git`, suas credenciais ou dados do MySQL. O professor usa a própria
+senha do banco e não precisa instalar ferramentas de compilação para executar.
+O [guia de entrega](extras/Documentacao/ENTREGA.md) detalha empacotamento,
+pré-requisitos, Windows/macOS/Linux e a demonstração do reuso nas telas reais.
 
-   ```sh
-   ./mvnw package
-   java -jar target/projeto-reuso-0.3.0.jar
-   ```
-
-   A migração Flyway cria o schema MVP na primeira inicialização. A conta administrativa inicial é do tipo Universidade. O perfil Universidade cria centros acadêmicos; cada Centro Acadêmico pode criar palestrantes e administrar seus eventos. Estudantes podem se cadastrar pela página pública.
-
-3. Abra `http://localhost:8080`.
-
-Para preparar quatro contas de exemplo e três eventos futuros no MySQL, inicie uma vez com as credenciais do banco no ambiente:
+Se o banco ainda não tiver uma universidade, informe `APP_BOOTSTRAP_EMAIL` e
+`APP_BOOTSTRAP_PASSWORD` (mínimo oito caracteres) antes de iniciar. O bootstrap
+não altera contas existentes. Para a carga **opcional** de quatro contas fictícias
+e três eventos no MySQL, execute uma vez:
 
 ```sh
 java -jar target/projeto-reuso-0.3.0.jar --spring.profiles.active=seed --app.demo.seed=true
 ```
 
-O perfil `seed` mantém MySQL, migrações Flyway e validação JPA. Os acessos são os mesmos da tabela abaixo, com senha `Demo1234`. Os registros persistem entre reinícios; contas existentes não têm suas senhas alteradas. Depois da carga, a aplicação pode iniciar normalmente, sem esse perfil.
+| Perfil da carga opcional | E-mail | Senha fictícia |
+|---|---|---|
+| Universidade | `universidade@demo.com` | `Demo1234` |
+| Centro acadêmico | `centro@demo.com` | `Demo1234` |
+| Estudante | `usuario@demo.com` | `Demo1234` |
+| Palestrante | `palestrante@demo.com` | `Demo1234` |
 
-## Executar uma demonstração sem MySQL
+Contas existentes mantêm sua senha. A carga é independente da execução normal.
+A credencial fixa encontrada foi retirada da configuração atual; o histórico Git
+foi preservado e ainda contém a versão antiga. A rotação dessa credencial não foi executada.
 
-O perfil `demo` usa H2 em memória e cria automaticamente contas, um palestrante e três eventos futuros. Não precisa configurar MySQL nem cadastrar contas manualmente.
+## CRUD e persistência
+
+O requisito é atendido por estas **seis telas**, que representam operações distintas
+de usuários e eventos. As demais operações válidas dos dois cadastros permanecem disponíveis.
+
+| Tela | Operação | Rota | Template |
+|---|---|---|---|
+| Novo usuário | C | `/usuarios/novo` | `usuarios/novo.html` |
+| Lista de usuários | R | `/usuarios` | `usuarios/lista.html` |
+| Editar usuário | U | `/usuarios/{id}/editar` | `usuarios/editar.html` |
+| Novo evento | C | `/centro-academico/eventos/novo` | `eventos/novo.html` |
+| Lista de eventos | R | `/centro-academico/eventos` | `eventos/gestao-lista.html` |
+| Excluir evento | D | `/centro-academico/eventos/{id}/excluir` | `excluir.html` |
+
+GET apresenta a tela; POST autenticado com CSRF grava a alteração. A listagem lê os
+dados do MySQL. Usuários/eventos têm C/R/U/D completos, mas cada operação acima conta
+como uma tela na avaliação. A confirmação de exclusão não apaga nada antes do POST.
+Registros com vínculos são protegidos: use **Desativar** ou **Arquivar** para manter o histórico.
+
+Entre como centro para gerenciar palestrantes e eventos; como universidade para
+centros acadêmicos. O menu **Eventos** do centro abre a gestão; **Ver programação**
+abre o catálogo. Listas viram cartões identificados no celular. Confirmações
+abrem em modal e mantêm a tela de confirmação com URL própria. Mensagens de
+resultado usam toasts; erros de campos permanecem junto ao formulário.
+Navegação, ícones Bootstrap locais e componentes de apresentação são compartilhados.
+
+**Comunicados** foi mantido porque já contém dados em uso e aparece nos detalhes
+públicos dos eventos. Esse cadastro não é necessário para compor as seis telas.
+Categorias, espaços e presenças estavam vazios/sem vínculos e foram retirados.
+V5 aborta se encontrar dados nessas estruturas; as migrações já aplicadas continuam no histórico.
+
+Para comprovar persistência, crie um registro identificável, consulte seu ID no MySQL,
+edite e consulte novamente; exclua somente o registro de teste e confirme sua ausência.
+`MysqlPersistenciaTest` cobre usuários/eventos; `MysqlComunicadosTest` cobre o conteúdo preservado.
+
+## Seis exemplos de padrões e LPS
+
+- **Singleton GoF:** os estados de evento e inscrição são instâncias imutáveis com construtor privado e `getInstance()`. Dois exemplos usados na defesa: `DisponivelState` e `InscricaoAtivaState`. O contexto recebe o comportamento compartilhado sem compartilhar seus dados. Os serviços continuam gerenciados pelo Spring.
+- **Observer:** prévia de usuário e prévia de evento, com `FormularioSubject`, `PreviaUsuarioObserver` e `PreviaEventoObserver`. `PreviasController` registra e notifica objetos Java; o JavaScript transporta dados e apresenta texto, sem persistir rascunhos.
+- **State:** `Evento` delega a `evento/state`; `InscricaoEvento` delega a `inscricao/state`, inclusive após carregar do banco. Cancelamento e reinscrição usam os estados no fluxo real.
+- **Variabilidade LPS:** `APP_INSCRICOES_HABILITADAS=true` oferece catálogo com inscrições; `false` oferece somente divulgação. `VarianteProduto` controla os serviços e a interface. Usuários, eventos e persistência são o núcleo comum. A seleção ocorre ao iniciar, preservando os registros existentes.
+- **Compactação:** Extract Method em `UsuarioService.aplicarAtualizacao`, compartilhado pela edição gerenciada e pela própria conta. [Antes e depois verificáveis](extras/Compactacao/README.md).
+
+## Verificações reproduzíveis
 
 ```sh
-./mvnw package
-java -jar target/projeto-reuso-0.3.0.jar --spring.profiles.active=demo --server.port=8081
+sh scripts/validar.sh
+# Com MySQL configurado no ambiente:
+sh scripts/validar.sh --mysql
+python3 scripts/verificar_reinicio.py --port 8081
+python3 scripts/compactacao.py --verificar
 ```
 
-Abra [http://127.0.0.1:8081](http://127.0.0.1:8081). Todos os acessos de demonstração usam a senha **Demo1234**:
+O primeiro comando compila, testa e empacota; Node é necessário para os quatro
+testes da ponte JavaScript. O modo `--mysql` cria e remove somente seus próprios
+registros de teste no esquema existente. A verificação de reinício inicia duas JVMs
+sucessivas, cria/edita/exclui um evento por HTTP e compara o conteúdo das oito tabelas.
+Ela requer uma conta de centro existente (`TEST_CENTRO_EMAIL` e `TEST_PASSWORD`;
+padrão: centro da carga fictícia) e uma porta livre. Logs e relatórios ficam em `target/`.
 
-| Perfil | E-mail |
-|---|---|
-| Universidade | `universidade@demo.com` |
-| Centro acadêmico | `centro@demo.com` |
-| Estudante | `usuario@demo.com` |
-| Palestrante de exemplo | `palestrante@demo.com` |
+O perfil `demo` continua disponível para demonstração temporária com H2:
+`java -jar target/projeto-reuso-0.3.0.jar --spring.profiles.active=demo --server.port=8081`.
+Ele não comprova persistência em MySQL e apaga seus dados ao encerrar.
 
-Entre como estudante, abra Eventos, escolha Ver mais e clique em **Inscrever-me**. Use **Minhas inscrições** para acompanhar ou cancelar. A universidade pode administrar o centro cadastrado; o centro pode administrar o palestrante e os três eventos.
-
-Ao encerrar a demonstração, os dados são apagados. A próxima inicialização recria os exemplos. Para persistir alterações entre reinícios, use MySQL. As contas fictícias são criadas no perfil `demo` ou pela carga explícita `seed`; o bootstrap por variáveis de ambiente continua disponível no modo MySQL.
-
-## O que está no MVP
-
-- Login, cadastro de estudante, atualização dos próprios dados e autorização por perfil.
-- CRUD lógico de usuários: Universidade administra centros acadêmicos; Centro Acadêmico administra palestrantes; desativação preserva os registros.
-- CRUD de eventos administrado pelo Centro Acadêmico, palestrante opcional, listagem pública, detalhes, filtros por status, cancelamento, finalização e arquivamento lógico.
-- Padrão State existente para as transições de estado dos eventos.
-- Prévias de usuários e eventos calculadas por Observers Java e exibidas enquanto os formulários são preenchidos.
-- Inscrição e cancelamento pelo estudante, acompanhamento em Minhas inscrições, controle de vagas e proteção contra inscrição duplicada ou acima da capacidade.
-- Migrações versionadas V1 e V2 do schema MySQL; inscrições são persistidas na tabela `inscricao_evento`.
-
-Controle de presença, certificados, integração de calendários, relatórios e equipamentos ficam fora do MVP.
-
-
-## Padrões aplicados às telas
-
-- **Observer:** `FormularioSubject` notifica `PreviaUsuarioObserver` e `PreviaEventoObserver` no Java. As telas chamam `PreviasController` por HTTP e exibem os textos calculados pelos Observers. O JavaScript apenas envia e apresenta os dados; a prévia não grava no banco.
-- Os fluxos de criação e atualização de usuários e eventos são implementados diretamente nos métodos dos serviços, sem uso de Template Method.
-- **Singleton:** `UsuarioService` e `EventoService` usam o escopo singleton do Spring e atendem às operações das telas. Não há Singletons GoF explícitos de relógio ou contadores.
-
-Uma conta de centro acadêmico pode apresentar oito telas: listar, cadastrar, editar e confirmar desativação de palestrantes; listar, cadastrar, editar e confirmar arquivamento de eventos.
-
-Veja [MAPEAMENTO_PATTERNS_E_CRUDS.md](./MAPEAMENTO_PATTERNS_E_CRUDS.md) para arquivos, métodos, rotas e roteiro de apresentação.
-
-Para verificar:
-
-```bash
-./mvnw package
-node --test src/test/js/previas-formularios.test.mjs
-```
-
-Os testes Java usam H2 para conferir os fluxos das telas, permissões, CSRF, rollback, escopo dos serviços e Observers das prévias. Os testes JavaScript conferem apenas o transporte e a apresentação, incluindo exclusão de senha do corpo e proteção contra respostas fora de ordem. Node é necessário somente para executar os testes JavaScript, não para abrir a aplicação.
-
-
-Os testes de inscrições cobrem o fluxo pelas telas, cancelamento/reinscrição, concorrência na última vaga, permissões, CSRF, eventos indisponíveis e alteração de capacidade. Os testes de dados de demonstração verificam contas, vínculos, idempotência e login dos três perfis principais. MySQL permanece uma verificação específica do ambiente de produção.
+Consulte [DEFESA.md](extras/Documentacao/DEFESA.md), [AUDITORIA.md](extras/Documentacao/AUDITORIA.md) e
+[extras/Evidencias/README.md](extras/Evidencias/README.md). O [vídeo local da compactação](<extras/Compactacao/video/Compactacao por Reuso.mp4>)
+revisado fica somente local, conforme decisão do usuário em 15/10/2026. Não há
+nova gravação ou publicação pendente. A [publicação anterior, não listada](https://youtu.be/7V2N4tl6JGI),
+foi preservada e contém o quadro de validação do escopo anterior.

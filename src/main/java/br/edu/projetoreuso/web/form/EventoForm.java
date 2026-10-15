@@ -4,23 +4,27 @@ import evento.Evento;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class EventoForm {
     @NotBlank
+    @Size(max = 180)
     private String nome;
     @NotNull
     private LocalDate data;
     @NotNull
     private LocalTime horario;
     @NotBlank
+    @Size(max = 255)
     private String local;
     @NotBlank
     private String descricao;
     @Min(1)
     private int quantidadeVagas;
+    @Size(max = 500)
     private String imagemUrl;
     private Long palestranteId;
 

@@ -2,9 +2,9 @@ package br.edu.projetoreuso.inscricao;
 
 import br.edu.projetoreuso.evento.EventoRepository;
 import br.edu.projetoreuso.usuario.UsuarioRepository;
+import br.edu.projetoreuso.config.VarianteProduto;
 import evento.Evento;
 import evento.EventoStatus;
-import evento.state.DisponivelState;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,12 +18,19 @@ public class InscricaoService {
     private final InscricaoRepository inscricoes;
     private final EventoRepository eventos;
     private final UsuarioRepository usuarios;
-    public InscricaoService(InscricaoRepository inscricoes, EventoRepository eventos, UsuarioRepository usuarios) {
-        this.inscricoes = inscricoes; this.eventos = eventos; this.usuarios = usuarios;
+    private final VarianteProduto variante;
+
+    public InscricaoService(InscricaoRepository inscricoes, EventoRepository eventos,
+                           UsuarioRepository usuarios, VarianteProduto variante) {
+        this.inscricoes = inscricoes;
+        this.eventos = eventos;
+        this.usuarios = usuarios;
+        this.variante = variante;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public InscricaoEvento inscrever(String email, Long eventoId) {
+        variante.exigirInscricoes();
         Aluno aluno = aluno(email);
         Evento evento = eventos.findBloqueadoById(eventoId).filter(Evento::isAtivo)
                 .orElseThrow(() -> new IllegalArgumentException("Evento não encontrado."));
@@ -34,9 +41,13 @@ public class InscricaoService {
         long ocupadas = inscricoes.countByEvento_IdAndAtivaTrue(eventoId);
         if (ocupadas >= evento.getQuantidadeVagas()) throw new IllegalStateException("As vagas deste evento estão esgotadas.");
         if (inscricao == null) {
-            inscricao = new InscricaoEvento(); inscricao.setAluno(aluno); inscricao.setEvento(evento);
+            inscricao = new InscricaoEvento();
+            inscricao.setAluno(aluno);
+            inscricao.setEvento(evento);
+            inscricao.setDataInscricao(LocalDateTime.now());
+        } else {
+            inscricao.reativar();
         }
-        inscricao.setAtiva(true); inscricao.setDataInscricao(LocalDateTime.now()); inscricao.setDataCancelamento(null);
         InscricaoEvento salva = inscricoes.save(inscricao);
         if (ocupadas + 1 == evento.getQuantidadeVagas()) { evento.lotar(); eventos.save(evento); }
         return salva;
@@ -44,20 +55,23 @@ public class InscricaoService {
 
     @Transactional(readOnly = true)
     public List<InscricaoEvento> minhas(String email) {
+        variante.exigirInscricoes();
         return inscricoes.findAllByAluno_IdOrderByDataInscricaoDesc(aluno(email).getId());
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void cancelar(String email, Long id) {
+        variante.exigirInscricoes();
         Aluno aluno = aluno(email);
         Long eventoId = inscricoes.eventoDaInscricao(id, aluno.getId())
                 .orElseThrow(() -> new AccessDeniedException("Você não pode cancelar esta inscrição."));
         Evento evento = eventos.findBloqueadoById(eventoId).orElseThrow(() -> new IllegalArgumentException("Evento não encontrado."));
         InscricaoEvento inscricao = inscricoes.findById(id).orElseThrow();
-        if (!inscricao.isAtiva()) throw new IllegalStateException("Esta inscrição já foi cancelada.");
-        inscricao.setAtiva(false); inscricao.setDataCancelamento(LocalDateTime.now()); inscricoes.save(inscricao);
+        inscricao.cancelar();
+        inscricoes.save(inscricao);
         if (evento.isAtivo() && futuro(evento) && evento.getStatus() == EventoStatus.LOTADO) {
-            evento.setEventoState(new DisponivelState()); eventos.save(evento);
+            evento.reabrir();
+            eventos.save(evento);
         }
     }
 
@@ -69,7 +83,8 @@ public class InscricaoService {
                 .filter(Aluno.class::isInstance)
                 .flatMap(usuario -> inscricoes.findByAluno_IdAndEvento_Id(usuario.getId(), evento.getId()))
                 .map(InscricaoEvento::isAtiva).orElse(false);
-        return new Situacao(inscrito, vagas, evento.isAtivo() && futuro(evento) && evento.getStatus() == EventoStatus.DISPONIVEL && vagas > 0);
+        return new Situacao(inscrito, vagas, variante.isInscricoesHabilitadas() && evento.isAtivo()
+                && futuro(evento) && evento.getStatus() == EventoStatus.DISPONIVEL && vagas > 0);
     }
     private Aluno aluno(String email) {
         var usuario = usuarios.findByEmailIgnoreCase(email).orElseThrow(() -> new AccessDeniedException("Entre com sua conta de estudante."));

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${tituloConfirmacao})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main class="app-content form-page">
+    <a class="back-link" th:href="@{${voltar}}"><svg th:replace="~{fragments/layout :: icon('arrow-left')}"></svg> Voltar à lista</a>
+    <div class="form-heading"><span class="eyebrow">CONFIRMAÇÃO DE EXCLUSÃO</span><h1 th:text="${tituloConfirmacao}"></h1><p>Confira o registro antes de confirmar.</p></div>
+    <section class="confirmation-card" aria-labelledby="registro-exclusao">
+        <span class="confirmation-icon" aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('exclamation-triangle')}"></svg></span>
+        <h2 id="registro-exclusao" th:text="${nomeRegistro}"></h2>
+        <p>Esta ação exclui o registro de forma definitiva.</p>
+        <p class="confirmation-note" th:text="${avisoExclusao}"></p>
+        <form th:action="@{${acao}}" method="post">
+            <div class="form-actions"><a class="button button-outline" th:href="@{${voltar}}">Voltar sem excluir</a><button class="button button-danger" type="submit">Confirmar exclusão</button></div>
+        </form>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body></html>

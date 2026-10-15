@@ -1,11 +1,12 @@
 package inscricao.state;
 
-import inscricao.Inscricao;
+import br.edu.projetoreuso.inscricao.InscricaoEvento;
 
 public interface InscricaoState {
 
-    void cancelar (Inscricao inscricao);
-    void reativar (Inscricao inscricao);
+    void cancelar(InscricaoEvento inscricao);
+    void reativar(InscricaoEvento inscricao);
 
     String getNome();
+    boolean isAtiva();
 }

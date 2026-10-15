@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import usuario.TipoUsuario;
 
 @Controller
 @RequestMapping("/usuarios")
@@ -122,4 +121,25 @@ public class UsuariosController {
         }
     }
 
+    @GetMapping("/{id}/excluir")
+    public String confirmarExclusao(Authentication authentication, @PathVariable Long id, Model model) {
+        var usuario = usuarios.buscarGerenciado(authentication.getName(), id);
+        model.addAttribute("nomeRegistro", usuario.getNome());
+        model.addAttribute("tituloConfirmacao", "Excluir usuário");
+        model.addAttribute("avisoExclusao", "Contas com vínculos não podem ser excluídas. Use Desativar para preservar o histórico.");
+        model.addAttribute("acao", "/usuarios/" + id + "/excluir");
+        model.addAttribute("voltar", "/usuarios");
+        return "excluir";
+    }
+
+    @PostMapping("/{id}/excluir")
+    public String excluir(Authentication authentication, @PathVariable Long id, RedirectAttributes flash) {
+        try {
+            usuarios.excluir(authentication.getName(), id);
+            flash.addFlashAttribute("sucesso", "Usuário excluído.");
+        } catch (IllegalStateException | org.springframework.dao.DataIntegrityViolationException ex) {
+            flash.addFlashAttribute("erro", "Não foi possível excluir: o usuário possui vínculos. Use Desativar.");
+        }
+        return "redirect:/usuarios";
+    }
 }

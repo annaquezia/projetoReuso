@@ -2,7 +2,7 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head(${titulo})}"></head>
 <body><header th:replace="~{fragments/layout :: nav}"></header><main class="app-content form-page">
-    <a class="back-link" th:href="${propriaConta} ? @{/painel} : @{/usuarios}">← Voltar</a>
+    <a class="back-link" th:href="${propriaConta} ? @{/painel} : @{/usuarios}"><svg th:replace="~{fragments/layout :: icon('arrow-left')}"></svg> Voltar</a>
     <div class="form-heading"><span class="eyebrow">CONTA E PERFIL</span><h1 th:text="${titulo}">Usuário</h1><p>Preencha os dados do perfil. A senha é opcional na edição.</p></div>
     <form data-form-observer="usuario" th:attr="data-preview-url=${propriaConta} ? @{/minha-conta/previa} : @{/usuarios/previa}" th:fragment="campos" class="data-form" th:action="${acao}" th:object="${form}" method="post">
         <div class="alert alert-error" th:if="${#fields.hasGlobalErrors()}"><p th:each="erro : ${#fields.globalErrors()}" th:text="${erro}"></p></div>
@@ -17,13 +17,13 @@
         <div class="form-section" th:if="${form.tipoUsuario.name() == 'CENTRO_ACADEMICO'}"><h2>Dados do centro acadêmico</h2><div class="form-grid"><label class="span-2">Curso<input th:field="*{curso}" required><small class="field-error" th:errors="*{curso}"></small></label><label>Presidente<input th:field="*{presidente}"></label><label>Vice-presidente<input th:field="*{vicePresidente}"></label></div></div>
         <div class="form-section" th:if="${form.tipoUsuario.name() == 'PALESTRANTE'}"><h2>Dados de palestrante</h2><div class="form-grid"><label class="span-2">Área de atuação<input th:field="*{areaAtuacao}" placeholder="Ex.: Tecnologia e inovação"><small class="field-error" th:errors="*{areaAtuacao}"></small></label></div></div>
         <div class="form-section" th:if="${form.tipoUsuario.name() == 'UNIVERSIDADE'}"><h2>Dados da universidade</h2><div class="form-grid"><label class="span-2">Endereço<input th:field="*{endereco}"></label></div></div>
-        <div class="form-section"><h2>Segurança</h2><div class="form-grid"><label class="span-2">Senha <span class="optional" th:if="${propriaConta or titulo.startsWith('Editar')}">(opcional para manter a atual)</span><input th:field="*{senha}" type="password" autocomplete="new-password" minlength="8" placeholder="Pelo menos 8 caracteres"><small class="field-error" th:errors="*{senha}"></small></label></div></div>
+        <div class="form-section"><h2>Segurança</h2><div class="form-grid"><label class="span-2">Senha <span class="optional" th:if="${propriaConta or titulo.startsWith('Editar')}">(opcional para manter a atual)</span><input th:field="*{senha}" type="password" autocomplete="new-password" th:required="${titulo == 'Novo usuário'}" minlength="8" placeholder="Pelo menos 8 caracteres"><small class="field-error" th:errors="*{senha}"></small></label></div></div>
         <section class="form-preview user-preview" data-form-preview="usuario" aria-labelledby="previa-usuario-titulo" hidden>
             <h2 id="previa-usuario-titulo">Confira os dados</h2>
             <p data-preview-status role="status" hidden></p>
             <span class="preview-label" data-previa="perfil"></span>
             <h3 data-previa="nome"></h3><p data-previa="email"></p><p data-previa="detalhe"></p>
         </section>
-        <div class="form-actions"><a class="button button-outline" th:href="${propriaConta} ? @{/painel} : @{/usuarios}">Cancelar</a><button class="button button-primary" type="submit"><span th:text="${titulo == 'Novo usuário' ? 'Cadastrar usuário' : 'Salvar alterações'}">Salvar alterações</span> <span>→</span></button></div>
+        <div class="form-actions"><a class="button button-outline" th:href="${propriaConta} ? @{/painel} : @{/usuarios}">Cancelar</a><button class="button button-primary" type="submit"><span th:text="${titulo == 'Novo usuário' ? 'Cadastrar usuário' : 'Salvar alterações'}">Salvar alterações</span> <span><svg th:replace="~{fragments/layout :: icon('arrow-right')}"></svg></span></button></div>
     </form>
 </main><footer th:replace="~{fragments/layout :: footer}"></footer></body></html>

@@ -2,7 +2,14 @@ package evento.state;
 
 import evento.Evento;
 
-public class FinalizadoState implements EventoState {
+public final class FinalizadoState implements EventoState {
+    private static final FinalizadoState INSTANCE = new FinalizadoState();
+    private final String nome;
+
+    private FinalizadoState() { this.nome = "Finalizado"; }
+
+    public static FinalizadoState getInstance() { return INSTANCE; }
+
     @Override
     public void lotar(Evento evento) {
         throw new IllegalStateException("Um evento finalizado não pode ser lotado");
@@ -20,6 +27,6 @@ public class FinalizadoState implements EventoState {
 
     @Override
     public String getNome() {
-        return "Finalizado";
+        return nome;
     }
 }

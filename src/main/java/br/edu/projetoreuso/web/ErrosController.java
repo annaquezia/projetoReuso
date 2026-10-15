@@ -10,6 +10,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class ErrosController {
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String conflito(Model model, HttpServletRequest request) {
+        model.addAttribute("requestPath", request.getRequestURI());
+        model.addAttribute("tituloErro", "Não foi possível salvar");
+        model.addAttribute("mensagem", "Confira os dados: existe um valor já cadastrado ou um vínculo que impede a operação.");
+        return "erro";
+    }
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String naoEncontrado(IllegalArgumentException ex, Model model, HttpServletRequest request) {

@@ -157,7 +157,7 @@ class RequisitosCrudTest {
     }
 
     @Test
-    void templatesRespeitamRollbackDaTransacao() {
+    void servicosRespeitamRollbackDaTransacao() {
         TransactionTemplate transacao = new TransactionTemplate(transactionManager);
         Long revertido = transacao.execute(status -> {
             Evento evento = eventoService.criar(centro.getEmail(), eventoForm());
@@ -182,6 +182,8 @@ class RequisitosCrudTest {
         mvc.perform(get("/centro-academico/eventos/" + evento.getId() + "/arquivar").with(user(outro)))
                 .andExpect(status().isForbidden());
         mvc.perform(post("/centro-academico/eventos/" + evento.getId() + "/arquivar").with(user(outro)).with(csrf()))
+                .andExpect(status().isForbidden());
+        mvc.perform(post("/centro-academico/eventos/" + evento.getId() + "/excluir").with(user(outro)).with(csrf()))
                 .andExpect(status().isForbidden());
         mvc.perform(post("/centro-academico/eventos/" + evento.getId() + "/arquivar").with(user(centro)))
                 .andExpect(status().isForbidden());
@@ -212,6 +214,74 @@ class RequisitosCrudTest {
         assertThat(context.isSingleton("eventoService")).isTrue();
         assertThat(context.getBean(UsuarioService.class)).isSameAs(usuarioService);
         assertThat(context.getBean(EventoService.class)).isSameAs(eventoService);
+        var home = context.getBean(br.edu.projetoreuso.web.HomeController.class);
+        var gestao = context.getBean(br.edu.projetoreuso.web.EventoGestaoController.class);
+        var usuariosController = context.getBean(br.edu.projetoreuso.web.UsuariosController.class);
+        assertThat(org.springframework.test.util.ReflectionTestUtils.getField(home, "usuarios")).isSameAs(usuarioService);
+        assertThat(org.springframework.test.util.ReflectionTestUtils.getField(usuariosController, "usuarios")).isSameAs(usuarioService);
+        assertThat(org.springframework.test.util.ReflectionTestUtils.getField(home, "eventos")).isSameAs(eventoService);
+        assertThat(org.springframework.test.util.ReflectionTestUtils.getField(gestao, "eventos")).isSameAs(eventoService);
+    }
+
+    @Test
+    void excluiRegistrosSemVinculosEPreservaRegistrosComHistorico() throws Exception {
+        var palestrante = usuarioService.criarGerenciado(centro.getEmail(),
+                palestranteForm("excluir-" + UUID.randomUUID() + "@exemplo.edu.br"));
+        var form = eventoForm();
+        form.setPalestranteId(palestrante.getId());
+        var evento = eventoService.criar(centro.getEmail(), form);
+        mvc.perform(get("/usuarios/" + palestrante.getId() + "/excluir").with(user(centro)))
+                .andExpect(status().isOk()).andExpect(content().string(containsString("Confirmar exclusão")));
+        mvc.perform(post("/usuarios/" + palestrante.getId() + "/excluir").with(user(centro)).with(csrf()))
+                .andExpect(flash().attributeExists("erro"));
+        assertThat(usuarios.existsById(palestrante.getId())).isTrue();
+        mvc.perform(get("/centro-academico/eventos/" + evento.getId() + "/excluir").with(user(centro)))
+                .andExpect(status().isOk());
+        assertThat(eventos.existsById(evento.getId())).isTrue();
+        mvc.perform(post("/centro-academico/eventos/" + evento.getId() + "/excluir").with(user(centro)))
+                .andExpect(status().isForbidden());
+        mvc.perform(post("/centro-academico/eventos/" + evento.getId() + "/excluir").with(user(centro)).with(csrf()))
+                .andExpect(redirectedUrl("/centro-academico/eventos"));
+        assertThat(eventos.existsById(evento.getId())).isFalse();
+        mvc.perform(post("/usuarios/" + palestrante.getId() + "/excluir").with(user(centro)).with(csrf()))
+                .andExpect(redirectedUrl("/usuarios"));
+        assertThat(usuarios.existsById(palestrante.getId())).isFalse();
+        eventoService.criar(centro.getEmail(), eventoForm());
+        assertThatThrownBy(() -> usuarioService.excluir(universidade.getEmail(), centro.getId()))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void atualizarMinhaContaPreservaSessaoESenhaERecusaDuplicidade() throws Exception {
+        var login = mvc.perform(post("/login").with(csrf())
+                        .param("username", centro.getEmail()).param("password", "SenhaTeste123"))
+                .andExpect(redirectedUrl("/painel")).andReturn();
+        var sessao = (org.springframework.mock.web.MockHttpSession) login.getRequest().getSession(false);
+        String emailNovo = "alterado-" + UUID.randomUUID() + "@exemplo.edu.br";
+        String hashAnterior = centro.getSenha();
+        mvc.perform(post("/minha-conta").session(sessao).with(csrf())
+                        .param("nome", "Centro atualizado").param("email", emailNovo)
+                        .param("tipoUsuario", "CENTRO_ACADEMICO").param("curso", "Engenharia"))
+                .andExpect(redirectedUrl("/minha-conta"));
+        mvc.perform(get("/minha-conta").session(sessao))
+                .andExpect(status().isOk()).andExpect(content().string(containsString(emailNovo)))
+                .andExpect(content().string(containsString("Seus dados foram atualizados.")));
+        assertThat(usuarios.findById(centro.getId()).orElseThrow().getSenha()).isEqualTo(hashAnterior);
+        var invalido = UsuarioForm.from(usuarios.findById(centro.getId()).orElseThrow());
+        invalido.setEmail(universidade.getEmail());
+        assertThatThrownBy(() -> usuarioService.atualizarMinhaConta(emailNovo, invalido))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(usuarios.findById(centro.getId()).orElseThrow().getEmail()).isEqualTo(emailNovo);
+    }
+
+    @Test
+    void recusaTextoDeEventoMaiorQueColunaDoBanco() throws Exception {
+        mvc.perform(post("/centro-academico/eventos/novo").with(user(centro)).with(csrf())
+                        .param("nome", "x".repeat(181)).param("descricao", "Descrição")
+                        .param("data", LocalDate.now().plusDays(1).toString()).param("horario", "19:00")
+                        .param("local", "Auditório").param("quantidadeVagas", "1"))
+                .andExpect(status().isOk()).andExpect(model().attributeHasFieldErrors("form", "nome"));
+        assertThat(eventoService.listarDoCentro(centro.getEmail())).isEmpty();
     }
 
     @Test

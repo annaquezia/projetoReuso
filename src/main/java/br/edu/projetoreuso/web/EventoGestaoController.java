@@ -19,7 +19,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class EventoGestaoController {
     private final EventoService eventos;
 
-    public EventoGestaoController(EventoService eventos) { this.eventos = eventos; }
+    public EventoGestaoController(EventoService eventos) {
+        this.eventos = eventos;
+    }
 
     @GetMapping
     public String listar(Authentication authentication, Model model) {
@@ -133,4 +135,25 @@ public class EventoGestaoController {
         return "redirect:/centro-academico/eventos";
     }
 
+    @GetMapping("/{id}/excluir")
+    public String confirmarExclusao(Authentication authentication, @PathVariable Long id, Model model) {
+        var evento = eventos.buscarDoCentro(authentication.getName(), id);
+        model.addAttribute("nomeRegistro", evento.getNome());
+        model.addAttribute("tituloConfirmacao", "Excluir evento");
+        model.addAttribute("avisoExclusao", "Eventos com inscrições ou comunicados não podem ser excluídos. Use Arquivar para preservar o histórico.");
+        model.addAttribute("acao", "/centro-academico/eventos/" + id + "/excluir");
+        model.addAttribute("voltar", "/centro-academico/eventos");
+        return "excluir";
+    }
+
+    @PostMapping("/{id}/excluir")
+    public String excluir(Authentication authentication, @PathVariable Long id, RedirectAttributes flash) {
+        try {
+            eventos.excluir(authentication.getName(), id);
+            flash.addFlashAttribute("sucesso", "Evento excluído.");
+        } catch (IllegalStateException | org.springframework.dao.DataIntegrityViolationException ex) {
+            flash.addFlashAttribute("erro", "Não foi possível excluir: o evento possui vínculos. Use Arquivar.");
+        }
+        return "redirect:/centro-academico/eventos";
+    }
 }

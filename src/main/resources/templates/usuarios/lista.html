@@ -1,9 +1,27 @@
 <!doctype html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Usuários')}"></head>
-<body><header th:replace="~{fragments/layout :: nav}"></header><main class="app-content page-content">
-    <div class="welcome-row"><div><span class="eyebrow">GESTÃO DE USUÁRIOS</span><h1 th:text="${titulo}">Usuários</h1><p class="muted">Contas vinculadas à sua organização.</p></div><a class="button button-primary" th:href="@{/usuarios/novo}"><span>＋</span> Novo usuário</a></div>
-    <div th:if="${sucesso}" class="alert alert-success" th:text="${sucesso}"></div>
-    <div class="table-wrap" th:if="${!#lists.isEmpty(usuarios)}"><table><thead><tr><th>Nome</th><th>Perfil</th><th>E-mail</th><th>Estado</th><th>Ações</th></tr></thead><tbody><tr th:each="usuario : ${usuarios}"><td><div class="user-cell"><span class="user-avatar" th:text="${#strings.substring(usuario.nome, 0, 1)}">U</span><b th:text="${usuario.nome}"></b></div></td><td th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(usuario.tipoUsuario.name(), '_', ' ')))}"></td><td th:text="${usuario.email}"></td><td><span class="status-pill" th:classappend="${usuario.ativo ? ' status-disponivel' : ' status-cancelado'}" th:text="${usuario.ativo ? 'Ativo' : 'Inativo'}"></span></td><td><div class="table-actions"><a class="text-link" th:href="@{/usuarios/{id}/editar(id=${usuario.id})}">Editar</a><a th:if="${usuario.ativo}" class="text-link danger-link" th:href="@{/usuarios/{id}/desativar(id=${usuario.id})}">Desativar</a><form th:if="${!usuario.ativo}" th:action="@{/usuarios/{id}/status(id=${usuario.id})}" method="post"><button class="link-button" type="submit">Reativar</button></form></div></td></tr></tbody></table></div>
-    <div class="empty-state" th:if="${#lists.isEmpty(usuarios)}"><span class="empty-icon">◉</span><h2>Nenhum usuário cadastrado</h2><p>Adicione uma conta para começar a organizar sua comunidade.</p><a class="button button-primary" th:href="@{/usuarios/novo}">Adicionar usuário <span>→</span></a></div>
+<body><header th:replace="~{fragments/layout :: nav}"></header>
+<main class="app-content page-content">
+    <div class="welcome-row"><div><span class="eyebrow">GESTÃO DE USUÁRIOS</span><h1 th:text="${titulo}">Usuários</h1><p>Contas vinculadas à sua organização.</p></div><a class="button button-primary" th:href="@{/usuarios/novo}"><span aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('plus-lg')}"></svg></span> Novo usuário</a></div>
+    <div class="table-wrap" th:if="${!#lists.isEmpty(usuarios)}">
+        <table class="responsive-table" role="table"><caption class="visually-hidden">Contas da organização</caption>
+            <thead role="rowgroup"><tr role="row"><th scope="col">Nome</th><th scope="col">Perfil</th><th scope="col">E-mail</th><th scope="col">Estado</th><th scope="col">Ações</th></tr></thead>
+            <tbody role="rowgroup"><tr role="row" th:each="usuario : ${usuarios}">
+                <td role="cell" data-label="Nome"><div class="user-cell"><span class="user-avatar" aria-hidden="true" th:text="${#strings.substring(usuario.nome, 0, 1)}">U</span><b th:text="${usuario.nome}"></b></div></td>
+                <td role="cell" data-label="Perfil" th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(usuario.tipoUsuario.name(), '_', ' ')))}"></td>
+                <td role="cell" data-label="E-mail" th:text="${usuario.email}"></td>
+                <td role="cell" data-label="Estado"><span class="status-pill" th:classappend="${usuario.ativo ? ' status-disponivel' : ' status-cancelado'}" th:text="${usuario.ativo ? 'Ativo' : 'Inativo'}"></span></td>
+                <td role="cell" data-label="Ações"><div class="table-actions">
+                    <a class="text-link" th:href="@{/usuarios/{id}/editar(id=${usuario.id})}">Editar</a>
+                    <details class="row-menu"><summary>Mais ações</summary><div class="row-menu-content">
+                        <a th:if="${usuario.ativo}" class="text-link" data-modal-confirm th:href="@{/usuarios/{id}/desativar(id=${usuario.id})}">Desativar</a>
+                        <form th:if="${!usuario.ativo}" th:action="@{/usuarios/{id}/status(id=${usuario.id})}" method="post"><button class="link-button" type="submit">Reativar</button></form>
+                        <a class="text-link danger-link" data-modal-confirm th:href="@{/usuarios/{id}/excluir(id=${usuario.id})}">Excluir</a>
+                    </div></details>
+                </div></td>
+            </tr></tbody>
+        </table>
+    </div>
+    <div class="empty-state" th:if="${#lists.isEmpty(usuarios)}"><span class="empty-icon" aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('person')}"></svg></span><h2>Nenhum usuário cadastrado</h2><p>Adicione uma conta para começar a organizar sua comunidade.</p><a class="button button-primary" th:href="@{/usuarios/novo}">Adicionar usuário <span aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('arrow-right')}"></svg></span></a></div>
 </main><footer th:replace="~{fragments/layout :: footer}"></footer></body></html>

@@ -7,10 +7,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 
-import java.util.List;
 
 @Entity
 @Table(name = "centro_academico")
@@ -30,9 +28,6 @@ public class CentroAcademico extends Usuario {
     @JoinColumn(name = "universidade_id", nullable = false)
     private Universidade universidade;
 
-    @Transient
-    private List<String> integrantes;
-
     public String getCurso() { return curso; }
     public void setCurso(String curso) { this.curso = curso; }
     public String getPresidente() { return presidente; }
@@ -41,6 +36,4 @@ public class CentroAcademico extends Usuario {
     public void setVicePresidente(String vicePresidente) { this.vicePresidente = vicePresidente; }
     public Universidade getUniversidade() { return universidade; }
     public void setUniversidade(Universidade universidade) { this.universidade = universidade; }
-    public List<String> getIntegrantes() { return integrantes; }
-    public void setIntegrantes(List<String> integrantes) { this.integrantes = integrantes; }
 }

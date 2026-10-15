@@ -1,0 +1,88 @@
+[
+  {
+    "tela": "usuario-criar",
+    "campos": true,
+    "conteudo": 390,
+    "largura": 390,
+    "titulo": "Novo usuário"
+  },
+  {
+    "tela": "usuario-consultar",
+    "campos": true,
+    "conteudo": 390,
+    "largura": 390,
+    "titulo": "Usuários da organização"
+  },
+  {
+    "tela": "usuario-editar",
+    "campos": true,
+    "conteudo": 390,
+    "largura": 390,
+    "titulo": "Editar usuário"
+  },
+  {
+    "tela": "evento-criar",
+    "campos": true,
+    "conteudo": 390,
+    "largura": 390,
+    "titulo": "Criar evento"
+  },
+  {
+    "tela": "evento-consultar",
+    "campos": true,
+    "conteudo": 390,
+    "largura": 390,
+    "titulo": "Seus eventos"
+  },
+  {
+    "tela": "evento-excluir",
+    "campos": true,
+    "conteudo": 390,
+    "largura": 390,
+    "titulo": "Excluir evento"
+  },
+  {
+    "tela": "usuario-criar",
+    "campoSenhaObrigatorio": true,
+    "conteudo": 1280,
+    "largura": 1280,
+    "menuAtivo": "♧Usuários",
+    "titulo": "Novo usuário"
+  },
+  {
+    "tela": "usuario-consultar",
+    "conteudo": 1280,
+    "largura": 1280,
+    "menuAtivo": "♧Usuários",
+    "titulo": "Usuários da organização"
+  },
+  {
+    "tela": "usuario-editar",
+    "campoSenhaObrigatorio": false,
+    "conteudo": 1280,
+    "largura": 1280,
+    "menuAtivo": "♧Usuários",
+    "titulo": "Editar usuário"
+  },
+  {
+    "tela": "evento-criar",
+    "conteudo": 1280,
+    "largura": 1280,
+    "menuAtivo": "⊙Eventos",
+    "titulo": "Criar evento"
+  },
+  {
+    "tela": "evento-consultar",
+    "conteudo": 1280,
+    "largura": 1280,
+    "menuAtivo": "⊙Eventos",
+    "titulo": "Seus eventos"
+  },
+  {
+    "tela": "evento-excluir",
+    "conteudo": 1280,
+    "largura": 1280,
+    "menuAtivo": "⊙Eventos",
+    "titulo": "Excluir evento"
+  }
+]

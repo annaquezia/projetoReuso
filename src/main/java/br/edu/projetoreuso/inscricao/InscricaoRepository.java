@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface InscricaoRepository extends JpaRepository<InscricaoEvento, Long> {
+    boolean existsByEvento_Id(Long eventoId);
     Optional<InscricaoEvento> findByAluno_IdAndEvento_Id(Long alunoId, Long eventoId);
     long countByEvento_IdAndAtivaTrue(Long eventoId);
     @EntityGraph(attributePaths = {"evento", "evento.organizador"})

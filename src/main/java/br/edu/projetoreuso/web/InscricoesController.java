@@ -10,7 +10,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class InscricoesController {
     private final InscricaoService inscricoes;
-    public InscricoesController(InscricaoService inscricoes) { this.inscricoes = inscricoes; }
+    public InscricoesController(InscricaoService inscricoes) {
+        this.inscricoes = inscricoes;
+    }
     @PostMapping("/eventos/{id}/inscrever")
     public String inscrever(Authentication auth, @PathVariable Long id, RedirectAttributes flash) {
         try {

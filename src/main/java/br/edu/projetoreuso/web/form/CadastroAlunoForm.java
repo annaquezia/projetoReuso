@@ -24,11 +24,11 @@ public class CadastroAlunoForm {
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
     public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public void setEmail(String email) { this.email = email == null ? null : email.trim().toLowerCase(java.util.Locale.ROOT); }
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }
     public String getMatricula() { return matricula; }
-    public void setMatricula(String matricula) { this.matricula = matricula; }
+    public void setMatricula(String matricula) { this.matricula = matricula == null ? null : matricula.trim(); }
     public String getCurso() { return curso; }
     public void setCurso(String curso) { this.curso = curso; }
     public LocalDate getDataNascimento() { return dataNascimento; }

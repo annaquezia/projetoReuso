@@ -33,6 +33,11 @@ out/
 
 ### Java
 target/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
 # Compiled class file
 *.class
 
@@ -47,3 +52,6 @@ target/
 # Virtual machine crash logs
 hs_err_pid*
 replay_pid*
+
+# Entrega gerada pelo empacotador
+extras/Entrega/
