@@ -1,1 +1,0 @@
-Agora cada operação identifica o usuário correto, chama a rotina compartilhada e salva. A edição gerenciada continua verificando a permissão em buscarGerenciado. A própria conta continua partindo da identidade autenticada. Os métodos públicos mantêm a transação. Assim, centralizamos somente o comportamento comum, preservando as diferenças de autorização e o fluxo das duas telas.

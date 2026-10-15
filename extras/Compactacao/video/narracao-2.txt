@@ -1,1 +1,0 @@
-A técnica aplicada foi Extract Method. A rotina aplicarAtualizacao concentra as regras compartilhadas, o preenchimento do perfil e a codificação opcional da senha. Senha vazia preserva o hash anterior. A validação de matrícula foi acrescentada como correção. A redução demonstrada é de duplicação; não afirmamos que o arquivo inteiro ficou com menos linhas.
