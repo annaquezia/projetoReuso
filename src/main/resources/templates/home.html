@@ -1,28 +1,51 @@
 <!doctype html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="~{fragments/layout :: head('Início')}"></head>
-<body>
-<header th:replace="~{fragments/layout :: nav}"></header>
-<main class="public-home">
-    <section class="public-intro container" id="sobre">
-        <span class="eyebrow">POLIWEEK · SEMANA ACADÊMICA</span>
-        <h1>O que é a semana acadêmica?</h1>
-        <p>Um espaço para trocar conhecimento, conhecer novas ideias e aproximar a comunidade universitária por meio de eventos.</p>
-    </section>
-    <section class="featured-section container" aria-labelledby="agenda-title">
-        <div class="section-heading"><div><span class="eyebrow">PROGRAMAÇÃO</span><h2 id="agenda-title">Eventos acadêmicos</h2></div><a class="text-link" th:href="@{/eventos}">Ver todos <span><svg th:replace="~{fragments/layout :: icon('arrow-right')}"></svg></span></a></div>
-        <div th:if="${#lists.isEmpty(eventos)}" class="empty-state"><h3>Em breve, novos eventos</h3><p>A programação acadêmica aparecerá aqui.</p></div>
-        <div class="event-grid" th:unless="${#lists.isEmpty(eventos)}">
-            <article class="event-card" th:each="evento : ${eventos}">
-                <div class="event-visual"><img class="event-image" th:if="${evento.imagemUrl != null and !#strings.isEmpty(evento.imagemUrl)}" th:src="${evento.imagemUrl}" alt=""><span class="event-date" th:text="${#temporals.format(evento.data, 'dd MMM')}">10 OUT</span><span class="visual-glyph" aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('calendar-event')}"></svg></span></div>
-                <div class="event-card-body"><span class="event-meta" th:text="${#temporals.format(evento.horario, 'HH:mm')} + ' · ' + ${evento.local}">14:00 · Auditório</span><h3 th:text="${evento.nome}">Título do evento</h3><p th:text="${evento.descricao}">Descrição breve.</p><a class="card-link" th:href="@{/eventos/{id}(id=${evento.id})}">Ver mais <span><svg th:replace="~{fragments/layout :: icon('arrow-right')}"></svg></span></a></div>
-            </article>
-        </div>
-    </section>
-    <section class="participation-section" id="participar">
-        <div class="container participation-content"><div><span class="eyebrow">PARTICIPE</span><h2>Como participar?</h2><p>Consulte a programação, escolha os encontros de seu interesse e venha fazer parte da semana acadêmica.</p></div><a class="button button-primary" sec:authorize="isAnonymous()" th:href="@{/cadastro}">Cadastre-se! <span><svg th:replace="~{fragments/layout :: icon('arrow-right')}"></svg></span></a><a class="button button-primary" sec:authorize="isAuthenticated()" th:href="@{/painel}">Acessar meu painel <span><svg th:replace="~{fragments/layout :: icon('arrow-right')}"></svg></span></a></div>
-    </section>
-</main>
-<footer th:replace="~{fragments/layout :: footer}"></footer>
-</body>
+    <head th:replace="~{fragments/layout :: head('Início')}"></head>
+    <body>
+        <header th:replace="~{fragments/layout :: nav}"></header>
+        <main class="public-home">
+            <section class="public-intro container" id="sobre">
+                <span class="eyebrow">POLIWEEK · SEMANA ACADÊMICA</span>
+                <h1>O que é a semana acadêmica?</h1>
+                <p>Um espaço para trocar conhecimento, conhecer novas ideias e aproximar a comunidade universitária por meio de eventos.</p>
+            </section>
+            <section class="featured-section container" aria-labelledby="agenda-title">
+                <div class="section-heading">
+                    <div>
+                        <span class="eyebrow">PROGRAMAÇÃO</span>
+                        <h2 id="agenda-title">Eventos acadêmicos</h2>
+                    </div>
+                    <a class="text-link" th:href="@{/eventos}">Ver todos <span><svg th:replace="~{fragments/layout :: icon('arrow-right')}"></svg></span></a>
+                </div>
+                <div th:if="${#lists.isEmpty(eventos)}" class="empty-state">
+                    <h3>Em breve, novos eventos</h3>
+                    <p>A programação acadêmica aparecerá aqui.</p>
+                </div>
+                <div class="event-grid" th:unless="${#lists.isEmpty(eventos)}">
+                    <article class="event-card" th:each="evento : ${eventos}">
+                        <div class="event-visual">
+                            <img class="event-image" th:if="${evento.imagemUrl != null and !#strings.isEmpty(evento.imagemUrl)}" th:src="${evento.imagemUrl}" alt=""><span class="event-date" th:text="${#temporals.format(evento.data, 'dd MMM')}">10 OUT</span><span class="visual-glyph" aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('calendar-event')}"></svg></span>
+                        </div>
+                        <div class="event-card-body">
+                            <span class="event-meta" th:text="${#temporals.format(evento.horario, 'HH:mm')} + ' · ' + ${evento.local}">14:00 · Auditório</span>
+                            <h3 th:text="${evento.nome}">Título do evento</h3>
+                            <p th:text="${evento.descricao}">Descrição breve.</p>
+                            <a class="card-link" th:href="@{/eventos/{id}(id=${evento.id})}">Ver mais <span><svg th:replace="~{fragments/layout :: icon('arrow-right')}"></svg></span></a>
+                        </div>
+                    </article>
+                </div>
+            </section>
+            <section class="participation-section" id="participar">
+                <div class="container participation-content">
+                    <div>
+                        <span class="eyebrow">PARTICIPE</span>
+                        <h2>Como participar?</h2>
+                        <p>Consulte a programação, escolha os encontros de seu interesse e venha fazer parte da semana acadêmica.</p>
+                    </div>
+                    <a class="button button-primary" sec:authorize="isAnonymous()" th:href="@{/cadastro}">Cadastre-se! <span><svg th:replace="~{fragments/layout :: icon('arrow-right')}"></svg></span></a><a class="button button-primary" sec:authorize="isAuthenticated()" th:href="@{/painel}">Acessar meu painel <span><svg th:replace="~{fragments/layout :: icon('arrow-right')}"></svg></span></a>
+                </div>
+            </section>
+        </main>
+        <footer th:replace="~{fragments/layout :: footer}"></footer>
+    </body>
 </html>

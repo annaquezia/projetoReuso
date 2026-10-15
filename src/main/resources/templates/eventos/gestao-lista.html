@@ -1,30 +1,76 @@
 <!doctype html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Gerenciar eventos')}"></head>
-<body><header th:replace="~{fragments/layout :: nav}"></header>
-<main class="app-content page-content">
-    <div class="welcome-row"><div><span class="eyebrow">ÁREA DO CENTRO ACADÊMICO</span><h1>Seus eventos</h1><p>Crie e acompanhe os encontros da sua comunidade.</p></div><div class="page-actions"><a class="button button-outline" th:href="@{/eventos}">Ver programação</a><a class="button button-primary" th:href="@{/centro-academico/eventos/novo}"><span aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('plus-lg')}"></svg></span> Novo evento</a></div></div>
-    <div class="table-wrap" th:if="${!#lists.isEmpty(eventos)}">
-        <table class="responsive-table" role="table"><caption class="visually-hidden">Eventos ativos do centro acadêmico</caption>
-            <thead role="rowgroup"><tr role="row"><th scope="col">Evento</th><th scope="col">Data</th><th scope="col">Local</th><th scope="col">Status</th><th scope="col">Ações</th></tr></thead>
-            <tbody role="rowgroup"><tr role="row" th:each="evento : ${eventos}">
-                <td role="cell" data-label="Evento"><b th:text="${evento.nome}"></b><small class="table-sub" th:text="${evento.palestrante != null ? evento.palestrante.nome : 'Sem palestrante associado'}"></small></td>
-                <td role="cell" data-label="Data"><span class="table-date" th:text="${#temporals.format(evento.data, 'dd/MM/yyyy')}"></span><small class="table-sub" th:text="${#temporals.format(evento.horario, 'HH:mm')}"></small></td>
-                <td role="cell" data-label="Local" th:text="${evento.local}"></td>
-                <td role="cell" data-label="Status"><span class="status-pill" th:classappend="${' status-' + #strings.toLowerCase(evento.status.name())}" th:text="${evento.nomeEstado}"></span></td>
-                <td role="cell" data-label="Ações"><div class="table-actions">
-                    <a class="text-link" th:href="@{/centro-academico/eventos/{id}/editar(id=${evento.id})}">Editar</a>
-                    <a class="text-link" th:href="@{/eventos/{id}(id=${evento.id})}">Ver</a>
-                    <details class="row-menu"><summary>Mais ações</summary><div class="row-menu-content">
-                        <form th:if="${evento.status.name() == 'DISPONIVEL'}" th:action="@{/centro-academico/eventos/{id}/lotar(id=${evento.id})}" method="post"><button class="link-button" type="submit">Marcar lotado</button></form>
-                        <form th:if="${evento.status.name() == 'DISPONIVEL' or evento.status.name() == 'LOTADO'}" th:action="@{/centro-academico/eventos/{id}/finalizar(id=${evento.id})}" method="post"><button class="link-button" type="submit">Finalizar evento</button></form>
-                        <form th:if="${evento.status.name() == 'DISPONIVEL' or evento.status.name() == 'LOTADO'}" th:action="@{/centro-academico/eventos/{id}/cancelar(id=${evento.id})}" method="post" data-confirm="Cancelar este evento?" data-confirm-description="O evento deixará de aceitar inscrições. Confira antes de confirmar."><button class="link-button danger-link" type="submit">Cancelar evento</button></form>
-                        <a class="text-link" data-modal-confirm th:href="@{/centro-academico/eventos/{id}/arquivar(id=${evento.id})}">Arquivar</a>
-                        <a class="text-link danger-link" data-modal-confirm th:href="@{/centro-academico/eventos/{id}/excluir(id=${evento.id})}">Excluir</a>
-                    </div></details>
-                </div></td>
-            </tr></tbody>
-        </table>
-    </div>
-    <div class="empty-state" th:if="${#lists.isEmpty(eventos)}"><span class="empty-icon" aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('calendar-event')}"></svg></span><h2>Seu primeiro evento começa aqui</h2><p>Publique um evento e convide a comunidade para participar.</p><a class="button button-primary" th:href="@{/centro-academico/eventos/novo}">Criar evento <span aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('arrow-right')}"></svg></span></a></div>
-</main><footer th:replace="~{fragments/layout :: footer}"></footer></body></html>
+    <head th:replace="~{fragments/layout :: head('Gerenciar eventos')}"></head>
+    <body>
+        <header th:replace="~{fragments/layout :: nav}"></header>
+        <main class="app-content page-content">
+            <div class="welcome-row">
+                <div>
+                    <span class="eyebrow">ÁREA DO CENTRO ACADÊMICO</span>
+                    <h1>Seus eventos</h1>
+                    <p>Crie e acompanhe os encontros da sua comunidade.</p>
+                </div>
+                <div class="page-actions">
+                    <a class="button button-outline" th:href="@{/eventos}">Ver programação</a><a class="button button-primary" th:href="@{/centro-academico/eventos/novo}"><span aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('plus-lg')}"></svg></span>Novo evento</a>
+                </div>
+            </div>
+            <div class="table-wrap" th:if="${!#lists.isEmpty(eventos)}">
+                <table class="responsive-table" role="table">
+                    <caption class="visually-hidden">Eventos ativos do centro acadêmico</caption>
+                    <thead role="rowgroup">
+                        <tr role="row">
+                            <th scope="col">Evento</th>
+                            <th scope="col">Data</th>
+                            <th scope="col">Local</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody role="rowgroup">
+                        <tr role="row" th:each="evento : ${eventos}">
+                            <td role="cell" data-label="Evento">
+                                <b th:text="${evento.nome}"></b>
+                                <small class="table-sub" th:text="${evento.palestrante != null ? evento.palestrante.nome : 'Sem palestrante associado'}"></small>
+                            </td>
+                            <td role="cell" data-label="Data">
+                                <span class="table-date" th:text="${#temporals.format(evento.data, 'dd/MM/yyyy')}"></span>
+                                <small class="table-sub" th:text="${#temporals.format(evento.horario, 'HH:mm')}"></small>
+                            </td>
+                            <td role="cell" data-label="Local" th:text="${evento.local}"></td>
+                            <td role="cell" data-label="Status">
+                                <span class="status-pill" th:classappend="${' status-' + #strings.toLowerCase(evento.status.name())}" th:text="${evento.nomeEstado}"></span>
+                            </td>
+                            <td role="cell" data-label="Ações">
+                                <div class="table-actions">
+                                    <a class="text-link" th:href="@{/centro-academico/eventos/{id}/editar(id=${evento.id})}">Editar</a><a class="text-link" th:href="@{/eventos/{id}(id=${evento.id})}">Ver</a>
+                                    <details class="row-menu">
+                                        <summary>Mais ações</summary>
+                                        <div class="row-menu-content">
+                                            <form th:if="${evento.status.name() == 'DISPONIVEL'}" th:action="@{/centro-academico/eventos/{id}/lotar(id=${evento.id})}" method="post">
+                                                <button class="link-button" type="submit">Marcar lotado</button>
+                                            </form>
+                                            <form th:if="${evento.status.name() == 'DISPONIVEL' or evento.status.name() == 'LOTADO'}" th:action="@{/centro-academico/eventos/{id}/finalizar(id=${evento.id})}" method="post">
+                                                <button class="link-button" type="submit">Finalizar evento</button>
+                                            </form>
+                                            <form th:if="${evento.status.name() == 'DISPONIVEL' or evento.status.name() == 'LOTADO'}" th:action="@{/centro-academico/eventos/{id}/cancelar(id=${evento.id})}" method="post" data-confirm="Cancelar este evento?" data-confirm-description="O evento deixará de aceitar inscrições. Confira antes de confirmar.">
+                                                <button class="link-button danger-link" type="submit">Cancelar evento</button>
+                                            </form>
+                                            <a class="text-link" data-modal-confirm th:href="@{/centro-academico/eventos/{id}/arquivar(id=${evento.id})}">Arquivar</a><a class="text-link danger-link" data-modal-confirm th:href="@{/centro-academico/eventos/{id}/excluir(id=${evento.id})}">Excluir</a>
+                                        </div>
+                                    </details>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="empty-state" th:if="${#lists.isEmpty(eventos)}">
+                <span class="empty-icon" aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('calendar-event')}"></svg></span>
+                <h2>Seu primeiro evento começa aqui</h2>
+                <p>Publique um evento e convide a comunidade para participar.</p>
+                <a class="button button-primary" th:href="@{/centro-academico/eventos/novo}">Criar evento <span aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('arrow-right')}"></svg></span></a>
+            </div>
+        </main>
+        <footer th:replace="~{fragments/layout :: footer}"></footer>
+    </body>
+</html>
