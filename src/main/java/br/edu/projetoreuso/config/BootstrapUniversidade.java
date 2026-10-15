@@ -20,10 +20,10 @@ public class BootstrapUniversidade implements ApplicationRunner {
     private final UsuarioRepository usuarios;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${APP_BOOTSTRAP_EMAIL:}")
+    @Value("${APP_BOOTSTRAP_EMAIL:universidade@demo.com}")
     private String emailInicial;
 
-    @Value("${APP_BOOTSTRAP_PASSWORD:}")
+    @Value("${APP_BOOTSTRAP_PASSWORD:12345678}")
     private String senhaInicial;
 
     public BootstrapUniversidade(UsuarioRepository usuarios, PasswordEncoder passwordEncoder) {
