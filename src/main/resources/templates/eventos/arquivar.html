@@ -1,13 +1,29 @@
 <!doctype html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Arquivar evento')}"></head>
-<body><header th:replace="~{fragments/layout :: nav}"></header>
-<main class="app-content form-page">
-<a class="back-link" th:href="@{/centro-academico/eventos}"><svg th:replace="~{fragments/layout :: icon('arrow-left')}"></svg> Voltar</a>
-<div class="form-heading"><span class="eyebrow">PRESERVAÇÃO DO HISTÓRICO</span><h1>Arquivar evento</h1><p>Confira os dados antes de confirmar.</p></div>
-<section class="confirmation-card"><div class="form-section"><h2 th:text="${evento.nome}">Registro</h2><p>O evento sairá da programação pública e da lista de eventos ativos. Seu registro será preservado no banco.</p>
-<p th:if="${evento.ativo == false}">Este registro já está inativo.</p></div>
-<form th:if="${evento.ativo}" th:action="@{/centro-academico/eventos/{id}/arquivar(id=${evento.id})}" method="post">
-<div class="form-actions"><a class="button button-outline" th:href="@{/centro-academico/eventos}">Voltar sem alterar</a><button class="button button-primary" type="submit">Confirmar arquivamento</button></div>
-</form></section>
-</main><footer th:replace="~{fragments/layout :: footer}"></footer></body></html>
+    <head th:replace="~{fragments/layout :: head('Arquivar evento')}"></head>
+    <body>
+        <header th:replace="~{fragments/layout :: nav}"></header>
+        <main class="app-content form-page">
+            <a class="back-link" th:href="@{/centro-academico/eventos}"><svg th:replace="~{fragments/layout :: icon('arrow-left')}"></svg> Voltar</a>
+            <div class="form-heading">
+                <span class="eyebrow">PRESERVAÇÃO DO HISTÓRICO</span>
+                <h1>Arquivar evento</h1>
+                <p>Confira os dados antes de confirmar.</p>
+            </div>
+            <section class="confirmation-card">
+                <div class="form-section">
+                    <h2 th:text="${evento.nome}">Registro</h2>
+                    <p>O evento sairá da programação pública e da lista de eventos ativos. Seu registro será preservado no banco.</p>
+                    <p th:if="${evento.ativo == false}">Este registro já está inativo.</p>
+                </div>
+                <form th:if="${evento.ativo}" th:action="@{/centro-academico/eventos/{id}/arquivar(id=${evento.id})}" method="post">
+                    <div class="form-actions">
+                        <a class="button button-outline" th:href="@{/centro-academico/eventos}">Voltar sem alterar</a>
+                        <button class="button button-primary" type="submit">Confirmar arquivamento</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+        <footer th:replace="~{fragments/layout :: footer}"></footer>
+    </body>
+</html>

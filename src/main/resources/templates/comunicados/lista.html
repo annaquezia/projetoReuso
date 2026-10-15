@@ -1,31 +1,47 @@
 <!doctype html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Comunicados')}"></head>
-<body>
-<header th:replace="~{fragments/layout :: nav}"></header>
-<main class="app-content page-content">
-    <div class="welcome-row">
-        <div><span class="eyebrow">COMUNICAÇÃO DOS EVENTOS</span><h1>Comunicados</h1><p>Orientações e atualizações publicadas nos seus eventos.</p></div>
-        <a class="button button-primary" th:href="@{/centro-academico/comunicados/novo}"><span aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('plus-lg')}"></svg></span> Novo comunicado</a>
-    </div>
-    <div class="table-wrap" th:unless="${#lists.isEmpty(comunicados)}">
-        <table class="responsive-table" role="table"><caption class="visually-hidden">Comunicados dos eventos do centro acadêmico</caption>
-            <thead role="rowgroup"><tr role="row"><th scope="col">Título</th><th scope="col">Evento</th><th scope="col">Ações</th></tr></thead>
-            <tbody role="rowgroup"><tr role="row" th:each="item : ${comunicados}">
-                <td role="cell" data-label="Título"><b th:text="${item.titulo}"></b></td>
-                <td role="cell" data-label="Evento" th:text="${item.evento.nome}"></td>
-                <td role="cell" data-label="Ações"><div class="table-actions">
-                    <a class="text-link" th:href="@{/centro-academico/comunicados/{id}/editar(id=${item.id})}">Editar</a>
-                    <a class="text-link danger-link" data-modal-confirm th:href="@{/centro-academico/comunicados/{id}/excluir(id=${item.id})}">Excluir</a>
-                </div></td>
-            </tr></tbody>
-        </table>
-    </div>
-    <div class="empty-state" th:if="${#lists.isEmpty(comunicados)}">
-        <span class="empty-icon" aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('envelope')}"></svg></span><h2>Nenhum comunicado publicado</h2>
-        <p>Publique uma orientação para os participantes de um evento.</p>
-        <a class="button button-primary" th:href="@{/centro-academico/comunicados/novo}">Criar comunicado <span aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('arrow-right')}"></svg></span></a>
-    </div>
-</main>
-<footer th:replace="~{fragments/layout :: footer}"></footer>
-</body></html>
+    <head th:replace="~{fragments/layout :: head('Comunicados')}"></head>
+    <body>
+        <header th:replace="~{fragments/layout :: nav}"></header>
+        <main class="app-content page-content">
+            <div class="welcome-row">
+                <div>
+                    <span class="eyebrow">COMUNICAÇÃO DOS EVENTOS</span>
+                    <h1>Comunicados</h1>
+                    <p>Orientações e atualizações publicadas nos seus eventos.</p>
+                </div>
+                <a class="button button-primary" th:href="@{/centro-academico/comunicados/novo}"><span aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('plus-lg')}"></svg></span> Novo comunicado</a>
+            </div>
+            <div class="table-wrap" th:unless="${#lists.isEmpty(comunicados)}">
+                <table class="responsive-table" role="table">
+                    <caption class="visually-hidden">Comunicados dos eventos do centro acadêmico</caption>
+                    <thead role="rowgroup">
+                        <tr role="row">
+                            <th scope="col">Título</th>
+                            <th scope="col">Evento</th>
+                            <th scope="col">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody role="rowgroup">
+                        <tr role="row" th:each="item : ${comunicados}">
+                            <td role="cell" data-label="Título"><b th:text="${item.titulo}"></b></td>
+                            <td role="cell" data-label="Evento" th:text="${item.evento.nome}"></td>
+                            <td role="cell" data-label="Ações">
+                                <div class="table-actions">
+                                    <a class="text-link" th:href="@{/centro-academico/comunicados/{id}/editar(id=${item.id})}">Editar</a><a class="text-link danger-link" data-modal-confirm th:href="@{/centro-academico/comunicados/{id}/excluir(id=${item.id})}">Excluir</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="empty-state" th:if="${#lists.isEmpty(comunicados)}">
+                <span class="empty-icon" aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('envelope')}"></svg></span>
+                <h2>Nenhum comunicado publicado</h2>
+                <p>Publique uma orientação para os participantes de um evento.</p>
+                <a class="button button-primary" th:href="@{/centro-academico/comunicados/novo}">Criar comunicado <span aria-hidden="true"><svg th:replace="~{fragments/layout :: icon('arrow-right')}"></svg></span></a>
+            </div>
+        </main>
+        <footer th:replace="~{fragments/layout :: footer}"></footer>
+    </body>
+</html>
